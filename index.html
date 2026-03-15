@@ -119,6 +119,55 @@
   #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--teal);color:#0d1a14;font-size:13px;font-weight:600;padding:10px 20px;border-radius:10px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;font-family:'DM Sans',sans-serif;z-index:9999;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.error{background:var(--red);color:#fff;}
+
+  /* ── Mobile responsive ── */
+  @media (max-width:600px){
+    body{padding:16px 12px 80px;}
+
+    /* Header */
+    header{flex-direction:column;gap:10px;margin-bottom:24px;}
+    .header-actions{width:100%;justify-content:flex-end;}
+    .header-text h1{font-size:17px;}
+
+    /* Progress */
+    .progress-bar-wrap{margin-bottom:20px;}
+
+    /* Step blocks */
+    .step-header{padding:12px 14px;}
+    .step-body{padding:12px 14px 16px;}
+    .step-done-val{max-width:120px;font-size:10px;}
+
+    /* Pills — larger tap targets on mobile */
+    .pill{padding:10px 14px;font-size:13px;}
+    .pill-row{gap:7px;}
+
+    /* Trade info — stack all fields vertically on small screens */
+    .trade-info-row{flex-direction:column;gap:10px;}
+    .trade-info-field.narrow{flex:unset;width:100%;}
+    .trade-info-panel{padding:14px;}
+
+    /* News row — stack news input above time on mobile */
+    .news-row{flex-wrap:wrap;}
+    .news-row .news-inp{flex:1 1 100%;}
+    .news-row .time-inp{flex:1 1 auto;}
+
+    /* Summary grid — single column on mobile */
+    .sum-grid{grid-template-columns:1fr;}
+    .sum-actions{flex-direction:column;}
+    .sum-btn{width:100%;text-align:center;}
+
+    /* Gate warning */
+    #info-gate{font-size:12px;}
+
+    /* Ratio input */
+    .ratio-input{font-size:13px;}
+  }
+
+  /* Tablet tweaks */
+  @media (max-width:480px){
+    .header-text h1{font-size:15px;}
+    .step-title{font-size:12px;}
+  }
 </style>
 </head>
 <body>
