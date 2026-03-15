@@ -249,17 +249,19 @@
         <div class="pill" id="p-cons" onclick="pickApproach('conservative')">Conservative</div>
         <div class="pill" id="p-agg" onclick="pickApproach('aggressive')">Aggressive</div>
       </div>
-      <div id="anchor-options" style="display:none;">
-        <div class="sub-label">Anchor candle</div>
+      <div id="anchor-options" style="display:none;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
+        <div class="sub-label" style="margin-top:0;">Anchor candle</div>
         <div class="pill-row" id="anchor-row"></div>
       </div>
-      <div class="sub-label" style="margin-top:16px;">4H candle time</div>
-      <div class="pill-row">
-        <div class="pill" id="p-1800" onclick="pickCandle('1800')">1800</div>
-        <div class="pill" id="p-2200" onclick="pickCandle('2200')">2200</div>
-        <div class="pill" id="p-0200" onclick="pickCandle('0200')">0200</div>
-        <div class="pill" id="p-0600" onclick="pickCandle('0600')">0600</div>
-        <div class="pill" id="p-1000" onclick="pickCandle('1000')">1000</div>
+      <div id="candle-time-section" style="display:none;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
+        <div class="sub-label" style="margin-top:0;">4H candle time - traded candle</div>
+        <div class="pill-row">
+          <div class="pill" id="p-1800" onclick="pickCandle('1800')">1800</div>
+          <div class="pill" id="p-2200" onclick="pickCandle('2200')">2200</div>
+          <div class="pill" id="p-0200" onclick="pickCandle('0200')">0200</div>
+          <div class="pill" id="p-0600" onclick="pickCandle('0600')">0600</div>
+          <div class="pill" id="p-1000" onclick="pickCandle('1000')">1000</div>
+        </div>
       </div>
     </div>
   </div>
@@ -322,7 +324,7 @@
 
   <!-- Summary -->
   <div id="summary">
-    <div class="sum-title">// CHECKLIST COMPLETE</div>
+    <div class="sum-title">TRADE SPECIFICATION</div>
     <div class="sum-grid" id="sum-grid"></div>
     <div class="sum-actions">
       <button class="sum-btn primary" onclick="copySummary()">Copy summary</button>
@@ -532,9 +534,19 @@ function pickApproach(ap){
   const row=document.getElementById('anchor-row');row.innerHTML='';
   const opts=ap==='conservative'?[['C2 → C3','c2c3'],['C3 → C4','c3c4']]:[['C2 → C2','c2c2'],['C3 → C3','c3c3']];
   opts.forEach(([label,id])=>{const d=document.createElement('div');d.className='pill'+(state.anchor===label?' sel-blue':'');d.id='p-anchor-'+id;d.textContent=label;d.onclick=()=>pickAnchor(label);row.appendChild(d);});
-  document.getElementById('anchor-options').style.display='block';maybeStep2();
+  document.getElementById('anchor-options').style.display='block';
+  document.getElementById('candle-time-section').style.display='none';
+  state.candle=null;
+  ['p-1800','p-2200','p-0200','p-0600','p-1000'].forEach(id=>document.getElementById(id).className='pill');
+  maybeStep2();
 }
-function pickAnchor(val){state.anchor=val;document.querySelectorAll('#anchor-row .pill').forEach(el=>el.className='pill');[...document.querySelectorAll('#anchor-row .pill')].find(el=>el.textContent===val)?.classList.add('sel-blue');maybeStep2();}
+function pickAnchor(val){
+  state.anchor=val;
+  document.querySelectorAll('#anchor-row .pill').forEach(el=>el.className='pill');
+  [...document.querySelectorAll('#anchor-row .pill')].find(el=>el.textContent===val)?.classList.add('sel-blue');
+  document.getElementById('candle-time-section').style.display='block';
+  maybeStep2();
+}
 function pickCandle(val){state.candle=val;['p-1800','p-2200','p-0200','p-0600','p-1000'].forEach(id=>document.getElementById(id).className='pill');document.getElementById('p-'+val).className='pill sel-purple';maybeStep2();}
 function maybeStep2(){if(state.anchor&&state.candle){completeStep(2,state.anchor+' · '+state.candle);unlockStep(3);updateProgress();}}
 function pickEntry(val){state.entry=val;['p-45m','p-30m','p-15m','p-5m','p-3m'].forEach(id=>document.getElementById(id).className='pill');document.getElementById('p-'+val).className='pill sel-teal';completeStep(3,val);unlockStep(4);updateProgress();}
@@ -614,6 +626,7 @@ function resetAll(silent){
   document.querySelectorAll('.pill').forEach(el=>el.className='pill');
   document.querySelectorAll('.step-done-val').forEach(el=>el.textContent='');
   document.getElementById('anchor-options').style.display='none';
+  document.getElementById('candle-time-section').style.display='none';
   document.getElementById('anchor-row').innerHTML='';
   const ri=document.getElementById('ratio-input');ri.value='';ri.className='ratio-input';
   document.getElementById('ratio-msg').textContent='';
