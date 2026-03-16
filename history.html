@@ -264,7 +264,7 @@ function renderTable(){
       <td style="font-weight:600;color:var(--accent);">${t.ticker||'—'}</td>
       <td><span class="type-pill type-${t.trade_type||''}">${t.trade_type||'—'}</span></td>
       <td class="mono" style="font-size:11px;">${t.approach||'—'}</td>
-      <td class="mono" style="font-size:11px;">${t.anchor||'—'}</td>
+      <td class="mono" style="font-size:11px;white-space:nowrap;">${t.anchor||'—'}</td>
       <td class="mono" style="font-size:11px;">${t.candle||'—'}</td>
       <td class="mono" style="font-size:11px;">${t.entry_tf||'—'}</td>
       <td style="font-size:11px;max-width:140px;white-space:normal;">${t.structure||'—'}</td>
