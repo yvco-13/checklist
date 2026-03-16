@@ -58,9 +58,30 @@
   .header-text h1{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;letter-spacing:-.5px;}
   .header-text p{font-size:13px;color:var(--text-muted);margin-top:4px;}
   .header-text .creator{font-size:11px;font-family:'Space Mono',monospace;color:var(--amber);margin-top:6px;letter-spacing:.04em;}
-  .header-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+  .header-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;align-items:center;}
   .btn-icon{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-family:'DM Sans',sans-serif;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
   .btn-icon:hover{border-color:var(--border-active);color:var(--text);background:var(--surface2);}
+
+  /* Lock toggle */
+  .lock-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all .2s;user-select:none;}
+  .lock-toggle:hover{border-color:var(--border-active);}
+  .lock-toggle.locked{border-color:rgba(245,166,35,0.5);background:rgba(245,166,35,0.06);}
+  .lock-toggle-label{font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-dim);transition:color .2s;white-space:nowrap;}
+  .lock-toggle.locked .lock-toggle-label{color:var(--amber);}
+  .lock-switch{width:32px;height:18px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;position:relative;transition:background .2s,border-color .2s;flex-shrink:0;}
+  .lock-switch::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--text-muted);top:2px;left:2px;transition:transform .2s,background .2s;}
+  .lock-toggle.locked .lock-switch{background:rgba(245,166,35,0.2);border-color:var(--amber);}
+  .lock-toggle.locked .lock-switch::after{transform:translateX(14px);background:var(--amber);}
+
+  /* Locked trade info panel */
+  body.info-locked #trade-info-panel input,
+  body.info-locked #trade-info-panel .news-add-btn,
+  body.info-locked #trade-info-panel .news-del-btn{
+    pointer-events:none;
+    opacity:0.45;
+    cursor:not-allowed;
+    user-select:none;
+  }
 
   .progress-bar-wrap{margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;}
   .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);font-family:'Space Mono',monospace;margin-bottom:8px;}
@@ -106,8 +127,6 @@
   .ratio-msg.err{color:#fca5a5;}
   .ratio-msg.ok{color:var(--teal);}
 
-
-
   /* Summary */
   #summary{margin-top:24px;background:var(--surface);border:1px solid rgba(0,212,161,0.3);border-radius:16px;padding:20px;display:none;box-shadow:0 0 0 4px rgba(0,212,161,0.04),0 4px 24px rgba(0,212,161,0.06);}
   #summary.show{display:block;animation:fadeIn .35s ease;}
@@ -123,7 +142,6 @@
   .sum-btn.primary:hover{opacity:.88;}
   .sum-btn.secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);}
   .sum-btn.secondary:hover{border-color:var(--border-active);color:var(--text);}
-
   .sum-btn.save-db{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);}
   .sum-btn.save-db:hover{background:var(--accent);color:#fff;}
   .sum-btn.save-db:disabled{opacity:0.6;cursor:not-allowed;}
@@ -151,8 +169,6 @@
   .news-del-btn{background:transparent;border:none;color:var(--text-muted);font-size:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:6px;transition:all .15s;flex-shrink:0;line-height:1;}
   .news-del-btn:hover{color:var(--red);background:rgba(239,68,68,0.08);}
 
-
-
   #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--teal);color:#0d1a14;font-size:13px;font-weight:600;padding:10px 20px;border-radius:10px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;font-family:'DM Sans',sans-serif;z-index:9999;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.error{background:var(--red);color:#fff;}
@@ -160,43 +176,25 @@
   /* ── Mobile responsive ── */
   @media (max-width:600px){
     body{padding:16px 12px 80px;}
-
-    /* Header */
     header{flex-direction:column;gap:10px;margin-bottom:24px;}
     .header-actions{width:100%;justify-content:flex-end;}
     .header-text h1{font-size:17px;}
-
-    /* Progress */
     .progress-bar-wrap{margin-bottom:20px;}
-
-    /* Step blocks */
     .step-header{padding:12px 14px;}
     .step-body{padding:12px 14px 16px;}
     .step-done-val{max-width:120px;font-size:10px;}
-
-    /* Pills — larger tap targets on mobile */
     .pill{padding:10px 14px;font-size:13px;}
     .pill-row{gap:7px;}
-
-    /* Trade info — stack all fields vertically on small screens */
     .trade-info-row{flex-direction:column;gap:10px;}
     .trade-info-field.narrow{flex:unset;width:100%;}
     .trade-info-panel{padding:14px;}
-
-    /* News row — stack news input above time on mobile */
     .news-row{flex-wrap:wrap;}
     .news-row .news-inp{flex:1 1 100%;}
     .news-row .time-inp{flex:1 1 auto;}
-
-    /* Summary grid — single column on mobile */
     .sum-grid{grid-template-columns:1fr;}
     .sum-actions{flex-direction:column;}
     .sum-btn{width:100%;text-align:center;}
-
-    /* Gate warning */
     #info-gate{font-size:12px;}
-
-    /* Ratio input */
     .ratio-input{font-size:13px;}
   }
 
@@ -222,6 +220,11 @@
       <a class="btn-icon" href="/history.html" style="text-decoration:none;">Trade History</a>
       <button class="btn-icon" onclick="loadLast()">Load last</button>
       <button class="btn-icon" onclick="resetAll()">Reset</button>
+      <!-- Lock Toggle — Trade Info only -->
+      <div class="lock-toggle" id="lock-toggle" onclick="toggleInfoLock()" title="Lock / unlock Trade Info section">
+        <div class="lock-switch"></div>
+        <span class="lock-toggle-label" id="lock-label">Unlocked</span>
+      </div>
     </div>
   </header>
 
@@ -427,6 +430,25 @@ const state = {
   structure:null, ltf:null, ratio:'', target:''
 };
 let blocked = false;
+let isInfoLocked = false;
+
+// ─────────────────────────────────────────────
+//  LOCK TOGGLE — Trade Info only
+// ─────────────────────────────────────────────
+function toggleInfoLock(){
+  isInfoLocked = !isInfoLocked;
+  const toggle = document.getElementById('lock-toggle');
+  const label  = document.getElementById('lock-label');
+  if(isInfoLocked){
+    toggle.classList.add('locked');
+    label.textContent = 'Locked';
+    document.body.classList.add('info-locked');
+  } else {
+    toggle.classList.remove('locked');
+    label.textContent = 'Unlocked';
+    document.body.classList.remove('info-locked');
+  }
+}
 
 // ─────────────────────────────────────────────
 //  TRADE INFO HANDLERS
@@ -454,18 +476,15 @@ function checkInfoGate() {
   const step1 = document.getElementById('step1');
   gate.style.display = filled ? 'none' : 'block';
   if (filled) {
-    // Only unlock step1 if it's currently locked and no step is active yet
     if (step1.classList.contains('locked')) {
       step1.classList.remove('locked');
       step1.classList.add('active');
     }
   } else {
-    // Re-lock everything if date or ticker is cleared
     document.querySelectorAll('.step-block').forEach((el, i) => {
       el.classList.remove('done','active','locked');
-      el.classList.add(i === 0 ? 'locked' : 'locked');
+      el.classList.add('locked');
     });
-    // Reset state checklist values but keep date/ticker/news
     ['tradeType','approach','anchor','candle','entry','structure','ltf','ratio','target'].forEach(k => {
       state[k] = k==='ratio'||k==='target' ? '' : null;
     });
@@ -488,6 +507,7 @@ function checkInfoGate() {
 }
 
 function onTradeDate(val) {
+  if(isInfoLocked) return;
   state.tradeDate = val;
   const dayEl = document.getElementById('trade-date-display');
   const inp   = document.getElementById('trade-date-hidden');
@@ -508,6 +528,7 @@ function onTradeDate(val) {
 }
 
 function onTicker(val) {
+  if(isInfoLocked) return;
   state.ticker = val.toUpperCase();
   document.getElementById('trade-ticker').value = state.ticker;
   document.getElementById('trade-ticker').classList.toggle('filled', val.length > 0);
@@ -520,6 +541,7 @@ function onTicker(val) {
 let newsIdCounter = 0;
 
 function addNewsRow(newsVal, timeVal) {
+  if(isInfoLocked) return;
   const id = ++newsIdCounter;
   const list = document.getElementById('news-list');
   const row = document.createElement('div');
@@ -542,10 +564,10 @@ function addNewsRow(newsVal, timeVal) {
 }
 
 function updateNewsItem(id, field, val) {
+  if(isInfoLocked) return;
   const item = state.newsItems.find(n => n.id === id);
   if (!item) return;
   item[field] = val;
-  // Update border color feedback
   const row = document.getElementById('news-row-' + id);
   if (row) {
     const inp = field === 'news' ? row.querySelector('.news-inp') : row.querySelector('.time-inp');
@@ -555,6 +577,7 @@ function updateNewsItem(id, field, val) {
 }
 
 function removeNewsRow(id) {
+  if(isInfoLocked) return;
   state.newsItems = state.newsItems.filter(n => n.id !== id);
   const row = document.getElementById('news-row-' + id);
   if (row) row.remove();
@@ -582,10 +605,8 @@ function updateProgress(){
 }
 function updateHighlights(){
   const s = state;
-  // Trade info panel — highlight if date or ticker missing
   const infoPanel = document.getElementById('trade-info-panel');
   if(infoPanel) infoPanel.classList.toggle('needs-fill', !s.tradeDate || !s.ticker);
-  // Step blocks — only highlight active/unlocked steps that are not yet done
   const stepMap = [
     {id:'step1', done: !!s.tradeType},
     {id:'step2', done: !!(s.anchor && s.candle)},
@@ -688,7 +709,7 @@ function getRatioInputs(){
 }
 
 function validateRatioParts(L,R){
-  if(isNaN(L)||isNaN(R)) return {ok:false,err:null}; // not ready yet
+  if(isNaN(L)||isNaN(R)) return {ok:false,err:null};
   if(L<1||R<1) return {ok:false,err:'both values must be 1 or greater'};
   if(L===R&&!(L===1&&R===1)) return {ok:false,err:'equal values only allowed as 1:1'};
   if(L<R) return {ok:false,err:'left ('+L+') must be ≥ right ('+R+')'};
@@ -737,7 +758,6 @@ function confirmRatio(){
   state.ratio=L+','+R;completeStep(6,'['+L+':'+R+']');unlockStep(7);updateProgress();updateHighlights();showSummary();
 }
 
-// backward compat for loadLast
 function updateRatio(raw){
   if(!raw)return;
   const parts=raw.split(',');
@@ -800,7 +820,6 @@ function confirmTarget(raw){
   completeStep(7,formatted);updateProgress();updateHighlights();showSummary();
 }
 
-// keep backward compat for loadLast
 function updateTarget(raw){ confirmTarget(raw); }
 
 function loadLast(){
@@ -851,7 +870,6 @@ function copySummary(){
     '— by yvco.',
   ].filter(v=>v!==null).join('\n');
 
-  // Try modern clipboard API first, fall back to execCommand
   if(navigator.clipboard && window.isSecureContext){
     navigator.clipboard.writeText(lines)
       .then(()=>showToast('Copied!'))
@@ -1019,7 +1037,6 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  // Show install banner
   const banner = document.getElementById('install-banner');
   if(banner) banner.style.display = 'flex';
 });
