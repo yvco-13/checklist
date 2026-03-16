@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade History — yvco.</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d0f12'/><text y='.9em' font-size='80' x='10'>🍀</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -412,7 +413,7 @@ function renderTable(){
       </td>
       <td class="exec-col" id="result-${t.id}">
         <div style="display:flex;align-items:center;gap:4px;">
-          <input type="text" value="${t.actual_result||''}" placeholder="e.g. 2.5"
+          <input type="text" value="${t.actual_result||''}" placeholder=""
             onchange="updateField(${t.id},'actual_result',this.value)"
             style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:4px 8px;outline:none;width:70px;" />
           <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);">R</span>
