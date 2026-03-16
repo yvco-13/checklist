@@ -182,10 +182,11 @@
           <th class="exec-col">Achieved Target</th>
           <th class="exec-col">Result</th>
           <th class="exec-col"></th>
+          <th style="border-left:1px solid rgba(245,166,35,0.3);background:rgba(245,166,35,0.04);color:var(--amber);letter-spacing:.05em;font-size:10px;font-family:'Space Mono',monospace;padding:11px 14px;white-space:nowrap;">News</th>
         </tr>
       </thead>
       <tbody id="trades-body">
-        <tr><td colspan="18"><div class="loading">Loading trades…</div></td></tr>
+        <tr><td colspan="19"><div class="loading">Loading trades…</div></td></tr>
       </tbody>
     </table>
   </div>
@@ -216,7 +217,7 @@ async function loadTrades(){
     renderTable();
   } catch(err){
     document.getElementById('trades-body').innerHTML =
-      `<tr><td colspan="18"><div class="empty"><h3>Could not load trades</h3><p>${err.message}</p></div></td></tr>`;
+      `<tr><td colspan="19"><div class="empty"><h3>Could not load trades</h3><p>${err.message}</p></div></td></tr>`;
   }
 }
 
@@ -248,7 +249,7 @@ function renderTable(){
     : allTrades.filter(t => t.outcome === currentFilter);
 
   if(!trades.length){
-    tbody.innerHTML = `<tr><td colspan="18"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="19"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
@@ -311,6 +312,7 @@ function renderTable(){
           </svg>
         </button>
       </td>
+      <td style="font-size:11px;border-left:1px solid rgba(245,166,35,0.3);background:rgba(245,166,35,0.04);color:var(--text-dim);max-width:200px;white-space:normal;">${t.news||'—'}</td>
     </tr>`;
   }).join('');
 }
