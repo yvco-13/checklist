@@ -122,7 +122,9 @@
   .sum-btn.secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);}
   .sum-btn.secondary:hover{border-color:var(--border-active);color:var(--text);}
 
-  .trade-info-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:14px;transition:border-color .3s,box-shadow .3s;}
+  .sum-btn.save-db{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);}
+  .sum-btn.save-db:hover{background:var(--accent);color:#fff;}
+  .sum-btn.save-db:disabled{opacity:0.6;cursor:not-allowed;}
   .trade-info-panel.needs-fill{border-color:rgba(245,166,35,0.6);box-shadow:0 0 0 3px rgba(245,166,35,0.08);}
   .step-block.needs-fill{border-color:rgba(245,166,35,0.6)!important;box-shadow:0 0 0 3px rgba(245,166,35,0.08);}
   .trade-info-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.06em;margin-bottom:12px;}
@@ -399,6 +401,7 @@
   </div>
   <div class="sum-actions" id="sum-actions" style="display:none;margin-top:12px;">
     <button class="sum-btn primary" onclick="copySummary()">Copy summary</button>
+    <button class="sum-btn save-db" id="save-db-btn" onclick="saveToDatabase()">Save to database</button>
     <button class="sum-btn secondary" onclick="resetAll()">New trade</button>
   </div>
 
@@ -896,11 +899,78 @@ function resetAll(silent){
   document.getElementById('target-msg').textContent='';
   document.getElementById('summary').classList.remove('show');
   document.getElementById('sum-actions').style.display='none';
-  const nb=document.getElementById('notion-btn');
+  const sdb=document.getElementById('save-db-btn');
+  if(sdb){sdb.disabled=false;sdb.textContent='Save to database';sdb.style.background='';sdb.style.borderColor='';sdb.style.color='';}
   document.getElementById('prog-fill').style.width='0%';
   document.getElementById('prog-label').textContent='0 / 7 steps';
   document.getElementById('prog-pct').textContent='0%';
   if(!silent)showToast('Checklist reset');
+}
+
+// ─────────────────────────────────────────────
+//  SAVE TO SUPABASE
+// ─────────────────────────────────────────────
+const SUPABASE_URL = 'https://raiojzsbgftepxhahkly.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
+
+async function saveToDatabase(){
+  const btn = document.getElementById('save-db-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const s = state;
+  const cap = v => v ? v.charAt(0).toUpperCase()+v.slice(1) : '';
+  const newsText = (s.newsItems||[]).filter(n=>n.news)
+    .map((n,i)=>'News '+(i+1)+': '+n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ');
+
+  const payload = {
+    trade_date:  s.tradeDate   || null,
+    day:         getDayOfWeek(s.tradeDate) || null,
+    ticker:      s.ticker      || null,
+    news:        newsText      || null,
+    trade_type:  cap(s.tradeType) || null,
+    approach:    cap(s.approach)  || null,
+    anchor:      s.anchor      || null,
+    candle:      s.candle      || null,
+    entry_tf:    s.entry       || null,
+    structure:   s.structure   || null,
+    ltf_level:   s.ltf         || null,
+    ratio:       s.ratio ? '['+s.ratio.replace(',',':')+']' : null,
+    target:      s.target      || null,
+    outcome:     'Pending'
+  };
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/trades', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok){
+      const err = await res.text();
+      throw new Error(err || 'Save failed');
+    }
+
+    showToast('Saved to database ✓');
+    btn.textContent = 'Saved ✓';
+    btn.style.background = 'var(--teal-dim)';
+    btn.style.borderColor = 'var(--teal)';
+    btn.style.color = 'var(--teal)';
+
+  } catch(err){
+    showToast('Save failed — ' + err.message, true);
+    btn.disabled = false;
+    btn.textContent = 'Save to database';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }
 }
 
 function autoSave(){
