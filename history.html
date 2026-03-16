@@ -42,6 +42,19 @@
   .stat-val.pending{color:var(--amber);}
   .stat-val.winrate{color:var(--accent);}
 
+  /* Sort indicator */
+  th.sortable{cursor:pointer;user-select:none;}
+  th.sortable:hover{color:var(--text);}
+  th.sortable .sort-arrow{margin-left:4px;opacity:0.4;font-size:9px;}
+  th.sortable.sorted-asc .sort-arrow::after{content:'↑';opacity:1;color:var(--accent);}
+  th.sortable.sorted-desc .sort-arrow::after{content:'↓';opacity:1;color:var(--accent);}
+  th.sortable:not(.sorted-asc):not(.sorted-desc) .sort-arrow::after{content:'↕';}
+
+  /* Ticker search */
+  .ticker-search{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;transition:border-color .15s;width:110px;}
+  .ticker-search:focus{border-color:var(--accent);}
+  .ticker-search::placeholder{color:var(--text-muted);}
+
   /* Filters */
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
   .filter-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;}
@@ -54,7 +67,7 @@
   .filter-btn.pending.active{background:var(--surface2);border-color:var(--text-muted);color:var(--text-dim);}
 
   /* Date range filter */
-  .date-filter{display:flex;align-items:center;gap:6px;margin-left:8px;}
+  .date-filter{display:flex;align-items:center;gap:6px;margin-left:4px;}
   .date-inp{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;transition:border-color .15s;}
   .date-inp:focus{border-color:var(--accent);}
   .date-sep{font-size:11px;color:var(--text-muted);}
@@ -121,6 +134,12 @@
     .stats-row{grid-template-columns:1fr 1fr;}
     body{padding:16px 12px 60px;}
     header{flex-direction:column;gap:10px;}
+    .filters{gap:6px;}
+    .filter-btn{padding:5px 10px;font-size:11px;}
+    .date-filter{margin-left:0;flex-wrap:wrap;gap:4px;}
+    .date-inp{width:100%;font-size:11px;}
+    .ticker-search{width:100%;}
+    .header-actions{flex-wrap:wrap;gap:6px;}
   }
 </style>
 </head>
@@ -172,11 +191,12 @@
     <button class="filter-btn win" data-filter="Win" onclick="setFilter('Win',this)">Win</button>
     <button class="filter-btn loss" data-filter="Loss" onclick="setFilter('Loss',this)">Loss</button>
     <button class="filter-btn breakeven" data-filter="Breakeven" onclick="setFilter('Breakeven',this)">Breakeven</button>
+    <input type="text" class="ticker-search" id="ticker-search" placeholder="Ticker…" oninput="renderTable()" />
     <div class="date-filter">
       <span class="date-sep">|</span>
-      <input type="date" class="date-inp" id="date-from" onchange="applyDateFilter()" placeholder="From" />
+      <input type="date" class="date-inp" id="date-from" onchange="applyDateFilter()" />
       <span class="date-sep">→</span>
-      <input type="date" class="date-inp" id="date-to" onchange="applyDateFilter()" placeholder="To" />
+      <input type="date" class="date-inp" id="date-to" onchange="applyDateFilter()" />
       <button class="date-clear" onclick="clearDateFilter()" title="Clear dates">✕</button>
     </div>
   </div>
@@ -187,7 +207,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Date</th>
+          <th class="sortable sorted-desc" id="sort-date" onclick="toggleSort()">Date <span class="sort-arrow"></span></th>
           <th>Ticker</th>
           <th>Type</th>
           <th>Approach</th>
@@ -223,6 +243,7 @@ const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
 let allTrades = [];
 let currentFilter = 'All';
+let sortAsc = false; // default: newest first (desc)
 
 // ── Export CSV ───────────────────────────────
 function exportCSV(){
@@ -277,14 +298,15 @@ async function loadTrades(){
   }
 }
 
-// ── Stats ────────────────────────────────────
+// ── Stats — reflects current filter ──────────
 function updateStats(){
-  const total    = allTrades.length;
-  const wins     = allTrades.filter(t=>t.outcome==='Win').length;
-  const losses   = allTrades.filter(t=>t.outcome==='Loss').length;
-  const pending  = allTrades.filter(t=>t.outcome==='Pending').length;
-  const closed   = wins + losses + allTrades.filter(t=>t.outcome==='Breakeven').length;
-  const winRate  = closed > 0 ? ((wins / closed) * 100).toFixed(1) + '%' : '—';
+  const trades  = getFilteredTrades();
+  const total   = trades.length;
+  const wins    = trades.filter(t=>t.outcome==='Win').length;
+  const losses  = trades.filter(t=>t.outcome==='Loss').length;
+  const pending = trades.filter(t=>t.outcome==='Pending').length;
+  const closed  = wins + losses + trades.filter(t=>t.outcome==='Breakeven').length;
+  const winRate = closed > 0 ? ((wins / closed) * 100).toFixed(1) + '%' : '—';
   document.getElementById('stat-total').textContent   = total;
   document.getElementById('stat-win').textContent     = wins;
   document.getElementById('stat-loss').textContent    = losses;
@@ -294,14 +316,32 @@ function updateStats(){
 
 // ── Get filtered trades ───────────────────────
 function getFilteredTrades(){
-  const from = document.getElementById('date-from').value;
-  const to   = document.getElementById('date-to').value;
-  return allTrades.filter(t => {
+  const from   = document.getElementById('date-from').value;
+  const to     = document.getElementById('date-to').value;
+  const ticker = (document.getElementById('ticker-search').value||'').trim().toUpperCase();
+  let trades = allTrades.filter(t => {
     const matchOutcome = currentFilter === 'All' || t.outcome === currentFilter;
-    const matchFrom    = !from || (t.trade_date && t.trade_date >= from);
-    const matchTo      = !to   || (t.trade_date && t.trade_date <= to);
-    return matchOutcome && matchFrom && matchTo;
+    const matchFrom    = !from   || (t.trade_date && t.trade_date >= from);
+    const matchTo      = !to     || (t.trade_date && t.trade_date <= to);
+    const matchTicker  = !ticker || (t.ticker && t.ticker.toUpperCase().includes(ticker));
+    return matchOutcome && matchFrom && matchTo && matchTicker;
   });
+  // Sort by trade_date
+  trades.sort((a, b) => {
+    const da = a.trade_date || '';
+    const db = b.trade_date || '';
+    return sortAsc ? da.localeCompare(db) : db.localeCompare(da);
+  });
+  return trades;
+}
+
+// ── Sort toggle ───────────────────────────────
+function toggleSort(){
+  sortAsc = !sortAsc;
+  const th = document.getElementById('sort-date');
+  th.classList.toggle('sorted-asc', sortAsc);
+  th.classList.toggle('sorted-desc', !sortAsc);
+  renderTable();
 }
 
 // ── Filter ───────────────────────────────────
@@ -309,14 +349,16 @@ function setFilter(filter, btn){
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  updateStats();
   renderTable();
 }
 
-function applyDateFilter(){ renderTable(); }
+function applyDateFilter(){ updateStats(); renderTable(); }
 
 function clearDateFilter(){
   document.getElementById('date-from').value = '';
   document.getElementById('date-to').value   = '';
+  updateStats();
   renderTable();
 }
 
@@ -325,18 +367,19 @@ function renderTable(){
   const tbody  = document.getElementById('trades-body');
   const trades = getFilteredTrades();
   const e = v => v ? v : `<span class="empty-val">—</span>`;
+  updateStats();
 
   if(!trades.length){
     tbody.innerHTML = `<tr><td colspan="19"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = trades.map((t) => {
+  tbody.innerHTML = trades.map((t, i) => {
     const date = t.trade_date
       ? t.trade_date + (t.day ? '<br><span style="color:var(--text-muted);font-size:10px;">'+t.day+'</span>' : '')
       : `<span class="empty-val">—</span>`;
     return `<tr>
-      <td class="mono" style="color:var(--text-muted);">${t.id}</td>
+      <td class="mono" style="color:var(--text-muted);">${i+1}</td>
       <td class="mono" style="font-size:11px;">${date}</td>
       <td style="font-weight:600;color:var(--accent);">${e(t.ticker)}</td>
       <td>${t.trade_type ? `<span class="type-pill type-${t.trade_type}">${t.trade_type}</span>` : `<span class="empty-val">—</span>`}</td>
