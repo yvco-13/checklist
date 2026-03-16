@@ -36,13 +36,22 @@
 
   /* Stats */
   .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .2s;}
+  .stat-card.featured{border-color:rgba(79,158,255,0.35);box-shadow:0 0 0 3px rgba(79,158,255,0.05);}
   .stat-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
   .stat-val{font-size:22px;font-family:'Space Mono',monospace;color:var(--text);}
   .stat-val.win{color:var(--teal);}
   .stat-val.loss{color:var(--red);}
   .stat-val.pending{color:var(--amber);}
   .stat-val.winrate{color:var(--accent);}
+
+  /* Table header improvements */
+  thead tr{background:var(--surface2);}
+  th{padding:13px 14px;text-align:left;font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.05em;border-bottom:2px solid var(--border);white-space:nowrap;vertical-align:middle;}
+
+  /* Filter row grouping */
+  .filter-group{display:flex;align-items:center;gap:6px;padding:4px 6px;background:var(--surface2);border-radius:10px;}
+  .filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0;}
 
   /* Sort indicator */
   th.sortable{cursor:pointer;user-select:none;}
@@ -59,14 +68,13 @@
 
   /* Filters */
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
-  .filter-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;}
-  .filter-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);transition:all .15s;}
-  .filter-btn:hover{border-color:var(--border-active);color:var(--text);}
-  .filter-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
-  .filter-btn.win.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
-  .filter-btn.loss.active{background:rgba(239,68,68,0.1);border-color:var(--red);color:var(--red);}
-  .filter-btn.breakeven.active{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
-  .filter-btn.pending.active{background:var(--surface2);border-color:var(--text-muted);color:var(--text-dim);}
+  .filter-btn{padding:6px 14px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all .15s;}
+  .filter-btn:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+  .filter-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+  .filter-btn.win.active{color:var(--teal);}
+  .filter-btn.loss.active{color:var(--red);}
+  .filter-btn.breakeven.active{color:var(--amber);}
+  .filter-btn.pending.active{color:var(--text-dim);}
 
   /* Date range filter */
   .date-filter{display:flex;align-items:center;gap:6px;margin-left:4px;}
@@ -137,9 +145,11 @@
     body{padding:16px 12px 60px;}
     header{flex-direction:column;gap:10px;}
     .filters{gap:6px;}
+    .filter-group{flex-wrap:wrap;gap:4px;}
     .filter-btn{padding:5px 10px;font-size:11px;}
-    .date-filter{margin-left:0;flex-wrap:wrap;gap:4px;}
-    .date-inp{width:100%;font-size:11px;}
+    .filter-divider{display:none;}
+    .date-filter{flex-wrap:wrap;gap:4px;}
+    .date-inp{font-size:11px;}
     .ticker-search{width:100%;}
     .header-actions{flex-wrap:wrap;gap:6px;}
   }
@@ -182,7 +192,7 @@
       <div class="stat-label">PENDING</div>
       <div class="stat-val pending" id="stat-pending">—</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card featured">
       <div class="stat-label">WIN RATE</div>
       <div class="stat-val winrate" id="stat-winrate">—</div>
     </div>
@@ -190,15 +200,16 @@
 
   <!-- Filters -->
   <div class="filters">
-    <span class="filter-label">FILTER:</span>
-    <button class="filter-btn active" data-filter="All" onclick="setFilter('All',this)">All</button>
-    <button class="filter-btn pending" data-filter="Pending" onclick="setFilter('Pending',this)">Pending</button>
-    <button class="filter-btn win" data-filter="Win" onclick="setFilter('Win',this)">Win</button>
-    <button class="filter-btn loss" data-filter="Loss" onclick="setFilter('Loss',this)">Loss</button>
-    <button class="filter-btn breakeven" data-filter="Breakeven" onclick="setFilter('Breakeven',this)">Breakeven</button>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="All" onclick="setFilter('All',this)">All</button>
+      <button class="filter-btn pending" data-filter="Pending" onclick="setFilter('Pending',this)">Pending</button>
+      <button class="filter-btn win" data-filter="Win" onclick="setFilter('Win',this)">Win</button>
+      <button class="filter-btn loss" data-filter="Loss" onclick="setFilter('Loss',this)">Loss</button>
+      <button class="filter-btn breakeven" data-filter="Breakeven" onclick="setFilter('Breakeven',this)">Breakeven</button>
+    </div>
+    <div class="filter-divider"></div>
     <input type="text" class="ticker-search" id="ticker-search" placeholder="Ticker…" oninput="renderTable()" />
     <div class="date-filter">
-      <span class="date-sep">|</span>
       <input type="date" class="date-inp" id="date-from" onchange="applyDateFilter()" />
       <span class="date-sep">→</span>
       <input type="date" class="date-inp" id="date-to" onchange="applyDateFilter()" />
