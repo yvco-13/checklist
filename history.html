@@ -78,6 +78,10 @@
   .type-Reversal{background:var(--purple-dim);color:var(--purple);}
   .type-Continuation{background:var(--teal-dim);color:var(--teal);}
 
+  /* Delete button */
+  .del-btn{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;flex-shrink:0;}
+  .del-btn:hover{color:var(--red);background:rgba(239,68,68,0.1);}
+
   /* Empty state */
   .empty{padding:60px 20px;text-align:center;color:var(--text-muted);}
   .empty h3{font-family:'Space Mono',monospace;font-size:14px;margin-bottom:8px;color:var(--text-dim);}
@@ -165,6 +169,7 @@
           <th>Ratio</th>
           <th>Target</th>
           <th>Outcome</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="trades-body">
@@ -231,7 +236,7 @@ function renderTable(){
     : allTrades.filter(t => t.outcome === currentFilter);
 
   if(!trades.length){
-    tbody.innerHTML = `<tr><td colspan="13"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
@@ -259,6 +264,13 @@ function renderTable(){
           <option ${t.outcome==='Loss'     ?'selected':''}>Loss</option>
           <option ${t.outcome==='Breakeven'?'selected':''}>Breakeven</option>
         </select>
+      </td>
+      <td>
+        <button class="del-btn" onclick="deleteTrade(${t.id})" title="Delete trade">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </td>
     </tr>`;
   }).join('');
@@ -288,7 +300,27 @@ async function updateOutcome(id, outcome){
   }
 }
 
-// ── Toast ────────────────────────────────────
+// ── Delete trade ─────────────────────────────
+async function deleteTrade(id){
+  if(!confirm('Delete this trade? This cannot be undone.')) return;
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/trades?id=eq.' + id, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      }
+    });
+    if(!res.ok) throw new Error('Delete failed');
+    allTrades = allTrades.filter(t => t.id !== id);
+    updateStats();
+    renderTable();
+    showToast('Trade deleted');
+  } catch(err){
+    showToast('Delete failed', true);
+  }
+}
 function showToast(msg, isError){
   const t = document.getElementById('toast');
   t.textContent = msg;
