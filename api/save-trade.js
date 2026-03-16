@@ -1,5 +1,4 @@
-export default async function handler(req, res) {
-  // Allow CORS from your Vercel domain
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -14,37 +13,33 @@ export default async function handler(req, res) {
 
   try {
     const s = req.body;
-
-    const payload = {
-      parent: { database_id: DATABASE_ID },
-      properties: {
-        'Trade': {
-          title: [{ text: { content: s.tradeName || 'Trade' } }]
-        },
-        'Date': s.tradeDate
-          ? { date: { start: s.tradeDate } }
-          : undefined,
-        'Day':            s.day         ? { rich_text: [{ text: { content: s.day } }] } : undefined,
-        'Ticker':         s.ticker      ? { rich_text: [{ text: { content: s.ticker } }] } : undefined,
-        'News':           s.news        ? { rich_text: [{ text: { content: s.news } }] } : undefined,
-        'Trade Type':     s.tradeType   ? { select: { name: s.tradeType } } : undefined,
-        'Approach':       s.approach    ? { select: { name: s.approach } } : undefined,
-        'Anchor':         s.anchor      ? { rich_text: [{ text: { content: s.anchor } }] } : undefined,
-        '4H Candle':      s.candle      ? { rich_text: [{ text: { content: s.candle } }] } : undefined,
-        'Entry TF':       s.entry       ? { select: { name: s.entry } } : undefined,
-        'Structure':      s.structure   ? { select: { name: s.structure } } : undefined,
-        'LTF Level':      s.ltf         ? { select: { name: s.ltf } } : undefined,
-        'V-Shape Ratio':  s.ratio       ? { rich_text: [{ text: { content: s.ratio } }] } : undefined,
-        'Projected Target': s.target    ? { rich_text: [{ text: { content: s.target } }] } : undefined,
-        'Outcome':        { select: { name: 'Pending' } },
-      }
+    const prop = (value, type) => {
+      if (!value) return undefined;
+      if (type === 'title')  return { title: [{ text: { content: String(value) } }] };
+      if (type === 'text')   return { rich_text: [{ text: { content: String(value) } }] };
+      if (type === 'select') return { select: { name: String(value) } };
+      if (type === 'date')   return { date: { start: String(value) } };
     };
-
-    // Remove undefined properties
-    Object.keys(payload.properties).forEach(k => {
-      if (payload.properties[k] === undefined) delete payload.properties[k];
+    const properties = {
+      'Trade':            prop(s.tradeName,  'title'),
+      'Date':             prop(s.tradeDate,  'date'),
+      'Day':              prop(s.day,        'text'),
+      'Ticker':           prop(s.ticker,     'text'),
+      'News':             prop(s.news,       'text'),
+      'Trade Type':       prop(s.tradeType,  'select'),
+      'Approach':         prop(s.approach,   'select'),
+      'Anchor':           prop(s.anchor,     'text'),
+      '4H Candle':        prop(s.candle,     'text'),
+      'Entry TF':         prop(s.entry,      'select'),
+      'Structure':        prop(s.structure,  'select'),
+      'LTF Level':        prop(s.ltf,        'select'),
+      'V-Shape Ratio':    prop(s.ratio,      'text'),
+      'Projected Target': prop(s.target,     'text'),
+      'Outcome':          prop('Pending',    'select'),
+    };
+    Object.keys(properties).forEach(k => {
+      if (properties[k] === undefined) delete properties[k];
     });
-
     const notionRes = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
       headers: {
@@ -52,20 +47,12 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Notion-Version': '2022-06-28'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ parent: { database_id: DATABASE_ID }, properties })
     });
-
     const data = await notionRes.json();
-
-    if (!notionRes.ok) {
-      console.error('Notion error:', data);
-      return res.status(500).json({ error: data.message || 'Notion API error' });
-    }
-
-    return res.status(200).json({ success: true, id: data.id, url: data.url });
-
+    if (!notionRes.ok) return res.status(500).json({ error: data.message || 'Notion API error' });
+    return res.status(200).json({ success: true, id: data.id });
   } catch (err) {
-    console.error('Server error:', err);
     return res.status(500).json({ error: err.message });
   }
-}
+};
