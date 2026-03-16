@@ -33,13 +33,14 @@
   .btn-icon:hover{border-color:var(--border-active);color:var(--text);background:var(--surface2);}
 
   /* Stats */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
   .stat-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
   .stat-val{font-size:22px;font-family:'Space Mono',monospace;color:var(--text);}
   .stat-val.win{color:var(--teal);}
   .stat-val.loss{color:var(--red);}
   .stat-val.pending{color:var(--amber);}
+  .stat-val.winrate{color:var(--accent);}
 
   /* Filters */
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
@@ -52,7 +53,16 @@
   .filter-btn.breakeven.active{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
   .filter-btn.pending.active{background:var(--surface2);border-color:var(--text-muted);color:var(--text-dim);}
 
-  /* Table */
+  /* Date range filter */
+  .date-filter{display:flex;align-items:center;gap:6px;margin-left:8px;}
+  .date-inp{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;transition:border-color .15s;}
+  .date-inp:focus{border-color:var(--accent);}
+  .date-sep{font-size:11px;color:var(--text-muted);}
+  .date-clear{background:transparent;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:0 4px;font-family:'DM Sans',sans-serif;}
+  .date-clear:hover{color:var(--red);}
+
+  /* Empty value */
+  .empty-val{color:rgba(90,96,112,0.4);font-family:'Space Mono',monospace;font-size:11px;}
   .table-wrap{border:1px solid var(--border);border-radius:14px;overflow:hidden;overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   thead tr{background:var(--surface2);}
@@ -148,6 +158,10 @@
       <div class="stat-label">PENDING</div>
       <div class="stat-val pending" id="stat-pending">—</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-label">WIN RATE</div>
+      <div class="stat-val winrate" id="stat-winrate">—</div>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -158,6 +172,13 @@
     <button class="filter-btn win" data-filter="Win" onclick="setFilter('Win',this)">Win</button>
     <button class="filter-btn loss" data-filter="Loss" onclick="setFilter('Loss',this)">Loss</button>
     <button class="filter-btn breakeven" data-filter="Breakeven" onclick="setFilter('Breakeven',this)">Breakeven</button>
+    <div class="date-filter">
+      <span class="date-sep">|</span>
+      <input type="date" class="date-inp" id="date-from" onchange="applyDateFilter()" placeholder="From" />
+      <span class="date-sep">→</span>
+      <input type="date" class="date-inp" id="date-to" onchange="applyDateFilter()" placeholder="To" />
+      <button class="date-clear" onclick="clearDateFilter()" title="Clear dates">✕</button>
+    </div>
   </div>
 
   <!-- Table -->
@@ -205,28 +226,26 @@ let currentFilter = 'All';
 
 // ── Export CSV ───────────────────────────────
 function exportCSV(){
-  if(!allTrades.length){ showToast('No trades to export', true); return; }
+  const trades = getFilteredTrades();
+  if(!trades.length){ showToast('No trades to export', true); return; }
 
   const cols = [
     'id','trade_date','day','ticker','trade_type','approach','anchor',
     'candle','entry_tf','structure','ltf_level','ratio','target',
     'entry_time','exit_time','achieved_target','actual_result','outcome','news','created_at'
   ];
-
   const headers = [
-    '#','Date','Day','Ticker','Type','Approach','Anchor',
+    'ID','Date','Day','Ticker','Type','Approach','Anchor',
     '4H Candle','Entry TF','Structure','LTF Level','Ratio','Projected Target',
     'Entry','Exit','Target Status','Achieved Target','Result','News','Created At'
   ];
-
   const escape = v => {
     if(v === null || v === undefined) return '';
     return '"' + String(v).replace(/"/g, '""') + '"';
   };
-
   const rows = [
     headers.join(','),
-    ...allTrades.map(t => cols.map(c => escape(t[c])).join(','))
+    ...trades.map(t => cols.map(c => escape(t[c])).join(','))
   ].join('\r\n');
 
   const blob = new Blob([rows], { type: 'text/csv' });
@@ -260,14 +279,29 @@ async function loadTrades(){
 
 // ── Stats ────────────────────────────────────
 function updateStats(){
-  const total     = allTrades.length;
-  const wins      = allTrades.filter(t=>t.outcome==='Win').length;
-  const losses    = allTrades.filter(t=>t.outcome==='Loss').length;
-  const pending   = allTrades.filter(t=>t.outcome==='Pending').length;
+  const total    = allTrades.length;
+  const wins     = allTrades.filter(t=>t.outcome==='Win').length;
+  const losses   = allTrades.filter(t=>t.outcome==='Loss').length;
+  const pending  = allTrades.filter(t=>t.outcome==='Pending').length;
+  const closed   = wins + losses + allTrades.filter(t=>t.outcome==='Breakeven').length;
+  const winRate  = closed > 0 ? ((wins / closed) * 100).toFixed(1) + '%' : '—';
   document.getElementById('stat-total').textContent   = total;
   document.getElementById('stat-win').textContent     = wins;
   document.getElementById('stat-loss').textContent    = losses;
   document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-winrate').textContent = winRate;
+}
+
+// ── Get filtered trades ───────────────────────
+function getFilteredTrades(){
+  const from = document.getElementById('date-from').value;
+  const to   = document.getElementById('date-to').value;
+  return allTrades.filter(t => {
+    const matchOutcome = currentFilter === 'All' || t.outcome === currentFilter;
+    const matchFrom    = !from || (t.trade_date && t.trade_date >= from);
+    const matchTo      = !to   || (t.trade_date && t.trade_date <= to);
+    return matchOutcome && matchFrom && matchTo;
+  });
 }
 
 // ── Filter ───────────────────────────────────
@@ -278,35 +312,42 @@ function setFilter(filter, btn){
   renderTable();
 }
 
+function applyDateFilter(){ renderTable(); }
+
+function clearDateFilter(){
+  document.getElementById('date-from').value = '';
+  document.getElementById('date-to').value   = '';
+  renderTable();
+}
+
 // ── Render table ─────────────────────────────
 function renderTable(){
-  const tbody = document.getElementById('trades-body');
-  const trades = currentFilter === 'All'
-    ? allTrades
-    : allTrades.filter(t => t.outcome === currentFilter);
+  const tbody  = document.getElementById('trades-body');
+  const trades = getFilteredTrades();
+  const e = v => v ? v : `<span class="empty-val">—</span>`;
 
   if(!trades.length){
     tbody.innerHTML = `<tr><td colspan="19"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = trades.map((t, i) => {
+  tbody.innerHTML = trades.map((t) => {
     const date = t.trade_date
       ? t.trade_date + (t.day ? '<br><span style="color:var(--text-muted);font-size:10px;">'+t.day+'</span>' : '')
-      : '—';
+      : `<span class="empty-val">—</span>`;
     return `<tr>
-      <td class="mono" style="color:var(--text-muted);">${i+1}</td>
+      <td class="mono" style="color:var(--text-muted);">${t.id}</td>
       <td class="mono" style="font-size:11px;">${date}</td>
-      <td style="font-weight:600;color:var(--accent);">${t.ticker||'—'}</td>
-      <td><span class="type-pill type-${t.trade_type||''}">${t.trade_type||'—'}</span></td>
-      <td class="mono" style="font-size:11px;">${t.approach||'—'}</td>
-      <td class="mono" style="font-size:11px;white-space:nowrap;">${t.anchor||'—'}</td>
-      <td class="mono" style="font-size:11px;">${t.candle||'—'}</td>
-      <td class="mono" style="font-size:11px;">${t.entry_tf||'—'}</td>
-      <td style="font-size:11px;white-space:nowrap;">${t.structure||'—'}</td>
-      <td style="font-size:11px;white-space:nowrap;">${t.ltf_level||'—'}</td>
-      <td class="mono">${t.ratio||'—'}</td>
-      <td class="mono">${t.target||'—'}</td>
+      <td style="font-weight:600;color:var(--accent);">${e(t.ticker)}</td>
+      <td>${t.trade_type ? `<span class="type-pill type-${t.trade_type}">${t.trade_type}</span>` : `<span class="empty-val">—</span>`}</td>
+      <td class="mono" style="font-size:11px;">${e(t.approach)}</td>
+      <td class="mono" style="font-size:11px;white-space:nowrap;">${e(t.anchor)}</td>
+      <td class="mono" style="font-size:11px;">${e(t.candle)}</td>
+      <td class="mono" style="font-size:11px;">${e(t.entry_tf)}</td>
+      <td style="font-size:11px;white-space:nowrap;">${e(t.structure)}</td>
+      <td style="font-size:11px;white-space:nowrap;">${e(t.ltf_level)}</td>
+      <td class="mono">${e(t.ratio)}</td>
+      <td class="mono">${e(t.target)}</td>
       <td class="mono exec-sep exec-col">
         <input type="time" class="time-inp" value="${t.entry_time||''}"
           onchange="updateField(${t.id},'entry_time',this.value)"
@@ -342,7 +383,7 @@ function renderTable(){
           <option ${t.outcome==='Breakeven'?'selected':''}>Breakeven</option>
         </select>
       </td>
-      <td style="font-size:11px;border-left:1px solid rgba(79,158,255,0.2);background:rgba(79,158,255,0.02);white-space:nowrap;">${t.news||'—'}</td>
+      <td style="font-size:11px;border-left:1px solid rgba(79,158,255,0.2);background:rgba(79,158,255,0.02);white-space:nowrap;">${e(t.news)}</td>
       <td style="background:rgba(79,158,255,0.02);">
         <button class="del-btn" onclick="deleteTrade(${t.id})" title="Delete trade">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
