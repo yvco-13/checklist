@@ -240,6 +240,32 @@ function setFilter(filter, btn){
   renderTable();
 }
 
+// ── Result cell logic ─────────────────────────
+function renderResult(t){
+  const at = t.achieved_target;
+  if(!at || at === '—') return '<span style="color:var(--text-muted);">—</span>';
+  if(at === 'Target hit'){
+    const val = t.target || '—';
+    return `<span class="mono" style="color:var(--teal);font-size:11px;">${val}</span>`;
+  }
+  if(at === 'Stop loss hit'){
+    return `<span class="mono" style="color:var(--red);font-size:11px;">-1R</span>`;
+  }
+  if(at === 'Breakeven'){
+    return `<span class="mono" style="color:var(--text-muted);font-size:11px;">—</span>`;
+  }
+  if(at === 'Trail stop hit'){
+    const saved = t.actual_result || '';
+    return `<div style="display:flex;align-items:center;gap:4px;">
+      <input type="text" value="${saved}" placeholder="e.g. 2.5"
+        onchange="updateField(${t.id},'actual_result',this.value)"
+        style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:4px 8px;outline:none;width:70px;" />
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);">R</span>
+    </div>`;
+  }
+  return '<span style="color:var(--text-muted);">—</span>';
+}
+
 // ── Render table ─────────────────────────────
 function renderTable(){
   const tbody = document.getElementById('trades-body');
@@ -308,33 +334,6 @@ function renderTable(){
       </td>
     </tr>`;
   }).join('');
-}
-
-// ── Result cell logic ─────────────────────────
-function renderResult(t){
-  const at = t.achieved_target;
-  if(!at || at === '—') return '<span style="color:var(--text-muted);">—</span>';
-
-  if(at === 'Target hit'){
-    const val = t.target || '—';
-    return `<span class="mono" style="color:var(--teal);font-size:11px;">${val}</span>`;
-  }
-  if(at === 'Stop loss hit'){
-    return `<span class="mono" style="color:var(--red);font-size:11px;">-1R</span>`;
-  }
-  if(at === 'Breakeven'){
-    return `<span class="mono" style="color:var(--text-muted);font-size:11px;">—</span>`;
-  }
-  if(at === 'Trail stop hit'){
-    const saved = t.actual_result || '';
-    return `<div style="display:flex;align-items:center;gap:4px;">
-      <input type="text" value="${saved}" placeholder="e.g. 2.5R"
-        onchange="updateField(${t.id},'actual_result',this.value)"
-        style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:4px 8px;outline:none;width:80px;" />
-      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);">R</span>
-    </div>`;
-  }
-  return '<span style="color:var(--text-muted);">—</span>';
 }
 
 async function onAchievedTargetChange(id, value, targetVal){
