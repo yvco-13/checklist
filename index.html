@@ -602,10 +602,10 @@ function showSummary(){
   const entries=[
     s.tradeDate ? {label:'Date', val: s.tradeDate + ', ' + getDayOfWeek(s.tradeDate)} : null,
     s.ticker    ? {label:'Ticker', val: s.ticker} : null,
-    ...(s.newsItems||[]).filter(n=>n.news).map((n,i)=>({
-      label: 'News ' + (i+1),
-      val: n.news + (n.time ? ' @ ' + formatNewsTime(n.time) : '')
-    })),
+    (s.newsItems||[]).filter(n=>n.news).length ? {
+      label: 'News',
+      val: (s.newsItems||[]).filter(n=>n.news).map(n=>n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ')
+    } : null,
     {label:'Trade type',val:s.tradeType ? s.tradeType.charAt(0).toUpperCase()+s.tradeType.slice(1) : null},
     {label:'Approach',val:s.approach ? s.approach.charAt(0).toUpperCase()+s.approach.slice(1) : null},{label:'Anchor',val:s.anchor},
     {label:'4H candle',val:s.candle},{label:'Entry TF',val:s.entry},
@@ -822,7 +822,7 @@ function loadLast(){
 function copySummary(){
   const s=state;
   const cap=v=>v?v.charAt(0).toUpperCase()+v.slice(1):'';
-  const newsLines=(s.newsItems||[]).filter(n=>n.news).map((n,i)=>'  • News '+(i+1)+'       '+n.news+(n.time?' @ '+formatNewsTime(n.time):''));
+  const newsLines=(s.newsItems||[]).filter(n=>n.news).map(n=>'  • '+n.news+(n.time?' @ '+formatNewsTime(n.time):''));
   const lines=[
     '==============================',
     '     TRADE SPECIFICATION      ',
@@ -922,7 +922,7 @@ async function saveToDatabase(){
   const s = state;
   const cap = v => v ? v.charAt(0).toUpperCase()+v.slice(1) : '';
   const newsText = (s.newsItems||[]).filter(n=>n.news)
-    .map((n,i)=>'News '+(i+1)+': '+n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ');
+    .map(n=>n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ');
 
   const payload = {
     trade_date:  s.tradeDate   || null,
