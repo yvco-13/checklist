@@ -435,7 +435,10 @@ function getDayOfWeek(dateStr) {
 
 function formatNewsTime(val) {
   if (!val) return '';
-  return val; // already HH:MM in 24h format from time input
+  const [h, m] = val.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
 }
 
 function checkInfoGate() {
