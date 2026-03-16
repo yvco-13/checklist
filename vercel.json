@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/save-trade.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
