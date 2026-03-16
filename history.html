@@ -36,7 +36,7 @@
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
   .stat-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
-  .stat-val{font-size:22px;font-weight:700;font-family:'Space Mono',monospace;color:var(--text);}
+  .stat-val{font-size:22px;font-family:'Space Mono',monospace;color:var(--text);}
   .stat-val.win{color:var(--teal);}
   .stat-val.loss{color:var(--red);}
   .stat-val.pending{color:var(--amber);}
@@ -77,6 +77,17 @@
   .type-pill{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-family:'Space Mono',monospace;font-weight:600;}
   .type-Reversal{background:var(--purple-dim);color:var(--purple);}
   .type-Continuation{background:var(--teal-dim);color:var(--teal);}
+
+  /* Execution columns — subtle tint + separator */
+  .exec-col{background:rgba(79,158,255,0.04);}
+  .exec-sep{border-left:1px solid rgba(79,158,255,0.25)!important;}
+
+  /* Dark scrollbar */
+  .table-wrap{scrollbar-width:thin;scrollbar-color:#2a3040 #141720;}
+  .table-wrap::-webkit-scrollbar{height:6px;}
+  .table-wrap::-webkit-scrollbar-track{background:#141720;border-radius:999px;}
+  .table-wrap::-webkit-scrollbar-thumb{background:#2a3040;border-radius:999px;}
+  .table-wrap::-webkit-scrollbar-thumb:hover{background:#3a4255;}
 
   /* Delete button */
   .del-btn{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;flex-shrink:0;}
@@ -167,13 +178,16 @@
           <th>Structure</th>
           <th>LTF Level</th>
           <th>Ratio</th>
-          <th>Target</th>
-          <th>Outcome</th>
-          <th></th>
+          <th>Projected Target</th>
+          <th class="exec-sep exec-col">Entry</th>
+          <th class="exec-col">Exit</th>
+          <th class="exec-col">Achieved Target</th>
+          <th class="exec-col">Outcome</th>
+          <th class="exec-col"></th>
         </tr>
       </thead>
       <tbody id="trades-body">
-        <tr><td colspan="13"><div class="loading">Loading trades…</div></td></tr>
+        <tr><td colspan="17"><div class="loading">Loading trades…</div></td></tr>
       </tbody>
     </table>
   </div>
@@ -236,7 +250,7 @@ function renderTable(){
     : allTrades.filter(t => t.outcome === currentFilter);
 
   if(!trades.length){
-    tbody.innerHTML = `<tr><td colspan="14"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="17"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
@@ -257,7 +271,26 @@ function renderTable(){
       <td style="font-size:11px;max-width:130px;white-space:normal;">${t.ltf_level||'—'}</td>
       <td class="mono">${t.ratio||'—'}</td>
       <td class="mono">${t.target||'—'}</td>
-      <td>
+      <td class="mono exec-sep exec-col">
+        <input type="time" class="time-inp" value="${t.entry_time||''}"
+          onchange="updateField(${t.id},'entry_time',this.value)"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:4px 8px;outline:none;cursor:pointer;color-scheme:dark;width:110px;" />
+      </td>
+      <td class="mono exec-col">
+        <input type="time" class="time-inp" value="${t.exit_time||''}"
+          onchange="updateField(${t.id},'exit_time',this.value)"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:4px 8px;outline:none;cursor:pointer;color-scheme:dark;width:110px;" />
+      </td>
+      <td class="exec-col">
+        <select class="outcome-sel" onchange="updateField(${t.id},'achieved_target',this.value)">
+          <option value="" ${!t.achieved_target?'selected':''}>—</option>
+          <option ${t.achieved_target==='Target hit'    ?'selected':''}>Target hit</option>
+          <option ${t.achieved_target==='Stop loss hit' ?'selected':''}>Stop loss hit</option>
+          <option ${t.achieved_target==='Breakeven'     ?'selected':''}>Breakeven</option>
+          <option ${t.achieved_target==='Trail stop hit'?'selected':''}>Trail stop hit</option>
+        </select>
+      </td>
+      <td class="exec-col">
         <select class="outcome-sel" onchange="updateOutcome(${t.id}, this.value)">
           <option ${t.outcome==='Pending'  ?'selected':''}>Pending</option>
           <option ${t.outcome==='Win'      ?'selected':''}>Win</option>
@@ -265,7 +298,7 @@ function renderTable(){
           <option ${t.outcome==='Breakeven'?'selected':''}>Breakeven</option>
         </select>
       </td>
-      <td>
+      <td class="exec-col">
         <button class="del-btn" onclick="deleteTrade(${t.id})" title="Delete trade">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -274,6 +307,28 @@ function renderTable(){
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Update any field ─────────────────────────
+async function updateField(id, field, value){
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/trades?id=eq.' + id, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ [field]: value || null })
+    });
+    if(!res.ok) throw new Error('Update failed');
+    const trade = allTrades.find(t => t.id === id);
+    if(trade) trade[field] = value;
+    showToast('Updated ✓');
+  } catch(err){
+    showToast('Update failed', true);
+  }
 }
 
 // ── Update outcome ───────────────────────────
