@@ -125,6 +125,7 @@
     </div>
     <div class="header-actions">
       <a class="btn-icon" href="/">Checklist</a>
+      <button class="btn-icon" onclick="exportCSV()">Export CSV</button>
       <button class="btn-icon" onclick="loadTrades()">Refresh</button>
     </div>
   </header>
@@ -201,6 +202,42 @@ const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
 let allTrades = [];
 let currentFilter = 'All';
+
+// ── Export CSV ───────────────────────────────
+function exportCSV(){
+  if(!allTrades.length){ showToast('No trades to export', true); return; }
+
+  const cols = [
+    'id','trade_date','day','ticker','trade_type','approach','anchor',
+    'candle','entry_tf','structure','ltf_level','ratio','target',
+    'entry_time','exit_time','achieved_target','actual_result','outcome','news','created_at'
+  ];
+
+  const headers = [
+    '#','Date','Day','Ticker','Type','Approach','Anchor',
+    '4H Candle','Entry TF','Structure','LTF Level','Ratio','Projected Target',
+    'Entry','Exit','Target Status','Achieved Target','Result','News','Created At'
+  ];
+
+  const escape = v => {
+    if(v === null || v === undefined) return '';
+    return '"' + String(v).replace(/"/g, '""') + '"';
+  };
+
+  const rows = [
+    headers.join(','),
+    ...allTrades.map(t => cols.map(c => escape(t[c])).join(','))
+  ].join('\r\n');
+
+  const blob = new Blob([rows], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'trade_history_' + new Date().toLocaleDateString('en-CA') + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported ✓');
+}
 
 // ── Load trades ──────────────────────────────
 async function loadTrades(){
