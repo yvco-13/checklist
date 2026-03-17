@@ -208,6 +208,40 @@
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.error{background:var(--red);color:#fff;}
 
+  /* Lot size calculator modal */
+  .calc-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:9990;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .calc-backdrop.show{opacity:1;pointer-events:all;}
+  .calc-modal{background:var(--surface);border:1px solid var(--border-active);border-radius:16px;padding:24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.5);transform:translateY(10px) scale(0.97);transition:transform .2s,opacity .2s;opacity:0;position:relative;}
+  .calc-backdrop.show .calc-modal{transform:translateY(0) scale(1);opacity:1;}
+  .calc-title{font-family:'Space Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+  .calc-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+  .calc-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;}
+  .calc-close:hover{color:var(--text);}
+  .calc-sel{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 13px;outline:none;cursor:pointer;width:100%;margin-bottom:14px;color-scheme:dark;transition:border-color .15s;}
+  .calc-sel option{background:#1c2130;color:var(--text);}
+  .calc-sel:focus{border-color:var(--accent);}
+  .calc-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+  .calc-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;}
+  .calc-inp{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:9px 13px;outline:none;transition:border-color .15s;width:100%;-moz-appearance:textfield;}
+  .calc-inp::-webkit-outer-spin-button,.calc-inp::-webkit-inner-spin-button{-webkit-appearance:none;}
+  .calc-inp:focus{border-color:var(--accent);}
+  .calc-inp::placeholder{color:var(--text-muted);}
+  .calc-row{display:flex;gap:10px;}
+  .calc-row .calc-field{flex:1;}
+  .calc-divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+  .calc-results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .calc-result-card{background:var(--surface2);border-radius:10px;padding:10px 12px;border:1px solid var(--border);}
+  .calc-result-card.lotcard{border-color:rgba(0,212,161,0.3);box-shadow:0 0 0 3px rgba(0,212,161,0.06);}
+  .calc-result-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:4px;}
+  .calc-result-val{font-size:18px;font-family:'Space Mono',monospace;color:var(--teal);}
+  .calc-result-val.risk{color:var(--amber);}
+  .calc-reset{width:100%;padding:9px;border-radius:10px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);transition:all .15s;}
+  .calc-reset:hover{border-color:var(--red);color:var(--red);}
+  .calc-pipval{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);margin-top:4px;min-height:16px;}
+  .calc-float{position:fixed;bottom:28px;right:24px;z-index:9980;width:46px;height:46px;border-radius:14px;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(245,166,35,0.4);transition:all .2s;}
+  .calc-float:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(245,166,35,0.55);}
+  .calc-float svg{width:20px;height:20px;color:#0d0f12;}
+
   /* Responsive */
   @media(max-width:600px){
     .stats-row{grid-template-columns:1fr 1fr;}
@@ -812,5 +846,133 @@ function showToast(msg, isError){
 // Boot
 loadTrades();
 </script>
+
+<!-- Floating Lot Calc Button -->
+<button class="calc-float" onclick="openCalc()" title="Lot Size Calculator">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="2" width="16" height="20" rx="2"/>
+    <line x1="8" y1="7" x2="16" y2="7"/>
+    <line x1="8" y1="11" x2="10" y2="11"/>
+    <line x1="14" y1="11" x2="16" y2="11"/>
+    <line x1="8" y1="15" x2="10" y2="15"/>
+    <line x1="14" y1="15" x2="16" y2="15"/>
+    <line x1="8" y1="19" x2="10" y2="19"/>
+    <line x1="14" y1="19" x2="16" y2="19"/>
+  </svg>
+</button>
+
+<!-- Lot Size Calculator Modal -->
+<div class="calc-backdrop" id="calc-modal">
+  <div class="calc-modal">
+    <button class="calc-close" onclick="closeCalc()">✕</button>
+    <div class="calc-title">Lot Size Calculator</div>
+    <div class="calc-sub">Based on your risk parameters</div>
+    <select class="calc-sel" id="calc-instrument" onchange="onCalcInstrumentChange()">
+      <option value="indices">Indices</option>
+      <option value="eurusd">EURUSD / GBPUSD</option>
+      <option value="usdjpy">USDJPY</option>
+      <option value="xauusd">XAUUSD</option>
+      <option value="xagusd">XAGUSD</option>
+    </select>
+    <div class="calc-row">
+      <div class="calc-field">
+        <label class="calc-label">ACCOUNT BALANCE</label>
+        <input type="number" class="calc-inp" id="calc-balance" placeholder="10000" min="0" step="0.01" oninput="saveCalcPrefs();calcLotSize()" />
+      </div>
+      <div class="calc-field">
+        <label class="calc-label">RISK %</label>
+        <input type="number" class="calc-inp" id="calc-risk-pct" placeholder="1" min="0" max="100" step="0.1" oninput="saveCalcPrefs();calcLotSize()" />
+      </div>
+    </div>
+    <div class="calc-field">
+      <label class="calc-label">STOP LOSS (POINTS)</label>
+      <input type="number" class="calc-inp" id="calc-sl" placeholder="20" min="0" step="0.1" oninput="calcLotSize()" />
+    </div>
+    <div class="calc-field" id="calc-price-field" style="display:none;">
+      <label class="calc-label">CURRENT USDJPY PRICE</label>
+      <input type="number" class="calc-inp" id="calc-price" placeholder="149.50" min="0" step="0.01" oninput="calcLotSize()" />
+      <div class="calc-pipval" id="calc-pipval"></div>
+    </div>
+    <hr class="calc-divider" />
+    <div class="calc-results">
+      <div class="calc-result-card">
+        <div class="calc-result-label">RISK AMOUNT</div>
+        <div class="calc-result-val risk" id="calc-out-risk">—</div>
+      </div>
+      <div class="calc-result-card lotcard">
+        <div class="calc-result-label">LOT SIZE</div>
+        <div class="calc-result-val" id="calc-out-lot">—</div>
+      </div>
+    </div>
+    <button class="calc-reset" onclick="resetCalc()">Reset</button>
+  </div>
+</div>
+
+<script>
+let calcTab = 'indices';
+
+function openCalc(){
+  const saved = JSON.parse(localStorage.getItem('calcPrefs') || '{}');
+  if(saved.balance) document.getElementById('calc-balance').value = saved.balance;
+  if(saved.riskPct) document.getElementById('calc-risk-pct').value = saved.riskPct;
+  calcLotSize();
+  document.getElementById('calc-modal').classList.add('show');
+}
+function closeCalc(){
+  document.getElementById('calc-modal').classList.remove('show');
+}
+document.getElementById('calc-modal').addEventListener('click', function(e){
+  if(e.target === this) closeCalc();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeCalc();
+});
+function saveCalcPrefs(){
+  const balance = document.getElementById('calc-balance').value;
+  const riskPct = document.getElementById('calc-risk-pct').value;
+  localStorage.setItem('calcPrefs', JSON.stringify({ balance, riskPct }));
+}
+function onCalcInstrumentChange(){
+  calcTab = document.getElementById('calc-instrument').value;
+  document.getElementById('calc-price-field').style.display = calcTab === 'usdjpy' ? 'flex' : 'none';
+  document.getElementById('calc-pipval').textContent = '';
+  calcLotSize();
+}
+function resetCalc(){
+  document.getElementById('calc-sl').value = '';
+  document.getElementById('calc-price').value = '';
+  document.getElementById('calc-pipval').textContent = '';
+  document.getElementById('calc-out-risk').textContent = '—';
+  document.getElementById('calc-out-lot').textContent = '—';
+}
+function calcLotSize(){
+  const balance = parseFloat(document.getElementById('calc-balance').value);
+  const riskPct = parseFloat(document.getElementById('calc-risk-pct').value);
+  const sl      = parseFloat(document.getElementById('calc-sl').value);
+  const price   = parseFloat(document.getElementById('calc-price').value);
+  const riskEl  = document.getElementById('calc-out-risk');
+  const lotEl   = document.getElementById('calc-out-lot');
+  const pipvalEl= document.getElementById('calc-pipval');
+  if(isNaN(balance) || isNaN(riskPct)){ riskEl.textContent='—'; lotEl.textContent='—'; return; }
+  const riskAmt = balance * (riskPct / 100);
+  riskEl.textContent = '$' + riskAmt.toFixed(2);
+  if(isNaN(sl) || sl === 0){ lotEl.textContent='—'; return; }
+  let lotSize = 0;
+  if(calcTab === 'indices' || calcTab === 'eurusd'){
+    lotSize = Math.ceil(riskAmt / (sl * 10) * 1000) / 1000;
+  } else if(calcTab === 'usdjpy'){
+    if(isNaN(price) || price === 0){ lotEl.textContent='—'; pipvalEl.textContent=''; return; }
+    const pipVal = Math.ceil(1000 / price * 100) / 100;
+    pipvalEl.textContent = 'Pip value: ' + pipVal.toFixed(2);
+    lotSize = Math.ceil(riskAmt / (sl * pipVal) * 1000) / 1000;
+  } else if(calcTab === 'xauusd'){
+    lotSize = Math.ceil(riskAmt / (sl * 100) * 1000) / 1000;
+  } else if(calcTab === 'xagusd'){
+    lotSize = Math.ceil(riskAmt / (sl * 5000) * 1000) / 1000;
+  }
+  lotEl.textContent = isNaN(lotSize) || lotSize <= 0 ? '—' : lotSize.toFixed(3);
+}
+</script>
+
 </body>
 </html>
