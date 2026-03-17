@@ -38,79 +38,68 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border-active);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;}
 
-  /* Stats row */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  /* Stats row — 2 cards only */
+  .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
-  .stat-card.featured{border-color:rgba(79,158,255,0.35);box-shadow:0 0 0 3px rgba(79,158,255,0.05);}
   .stat-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
   .stat-val{font-size:22px;font-family:'Space Mono',monospace;color:var(--text);}
   .stat-val.accent{color:var(--accent);}
-  .stat-val.teal{color:var(--teal);}
-  .stat-val.amber{color:var(--amber);}
 
-  /* Controls */
-  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;}
-  .control-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;white-space:nowrap;}
-  .min-inp{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:5px 10px;outline:none;width:60px;text-align:center;-moz-appearance:textfield;}
+  /* Filters — match trade history style */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+  .filter-group{display:flex;align-items:center;gap:6px;padding:4px 6px;background:var(--surface2);border-radius:10px;}
+  .filter-btn{padding:6px 14px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all .15s;}
+  .filter-btn:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+  .filter-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+  .filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0;}
+  .min-inp{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:5px 10px;outline:none;width:52px;text-align:center;-moz-appearance:textfield;transition:border-color .15s;}
   .min-inp::-webkit-outer-spin-button,.min-inp::-webkit-inner-spin-button{-webkit-appearance:none;}
   .min-inp:focus{border-color:var(--accent);}
-  .sort-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;}
+  .control-label{font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-muted);white-space:nowrap;}
+  .sort-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;transition:border-color .15s;}
   .sort-sel option{background:#1c2130;color:var(--text);}
   .sort-sel:focus{border-color:var(--accent);}
-  .filter-type{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;}
-  .filter-type option{background:#1c2130;color:var(--text);}
-  .filter-type:focus{border-color:var(--accent);}
-  .control-divider{width:1px;height:20px;background:var(--border);flex-shrink:0;}
 
-  /* Leaderboard cards */
+  /* Board */
   .board{display:flex;flex-direction:column;gap:8px;}
 
-  .combo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s;position:relative;overflow:hidden;}
+  /* Combo card */
+  .combo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s;border-left:2px solid transparent;}
   .combo-card:hover{border-color:var(--border-active);}
-  .combo-card.rank-1{border-color:rgba(245,166,35,0.4);box-shadow:0 0 0 3px rgba(245,166,35,0.05);}
-  .combo-card.rank-2{border-color:rgba(138,148,168,0.4);}
-  .combo-card.rank-3{border-color:rgba(176,111,74,0.35);}
 
-  /* Win rate bar behind card */
-  .combo-card-bg{position:absolute;inset:0;opacity:0.035;pointer-events:none;border-radius:14px;}
-  .combo-card-bg.high{background:var(--teal);}
-  .combo-card-bg.mid{background:var(--amber);}
-  .combo-card-bg.low{background:var(--red);}
+  /* Row left accent by win rate */
+  .combo-card.acc-high{border-left-color:var(--teal);}
+  .combo-card.acc-mid{border-left-color:var(--amber);}
+  .combo-card.acc-low{border-left-color:var(--red);}
+  .combo-card.acc-none{border-left-color:rgba(255,255,255,0.1);}
 
-  .combo-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .rank-badge{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);}
-  .rank-badge.r1{background:rgba(245,166,35,0.12);color:var(--amber);border-color:rgba(245,166,35,0.3);}
-  .rank-badge.r2{background:rgba(138,148,168,0.1);color:#8a94a8;border-color:rgba(138,148,168,0.3);}
-  .rank-badge.r3{background:rgba(176,111,74,0.1);color:#b06f4a;border-color:rgba(176,111,74,0.3);}
-
-  .combo-name{flex:1;font-size:13px;font-weight:500;color:var(--text);font-family:'DM Sans',sans-serif;}
-  .combo-winrate{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;flex-shrink:0;}
+  /* Card top row */
+  .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:right;}
+  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.02em;}
+  .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
   .combo-winrate.mid{color:var(--amber);}
   .combo-winrate.low{color:var(--red);}
   .combo-winrate.none{color:var(--text-muted);}
 
-  /* Tags row */
-  .combo-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  /* Tags */
+  .combo-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
   .tag{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
   .tag.type-Reversal{color:var(--purple);border-color:rgba(167,139,250,0.3);background:var(--purple-dim);}
   .tag.type-Continuation{color:var(--teal);border-color:rgba(0,212,161,0.3);background:var(--teal-dim);}
-  .tag.approach{color:var(--accent);border-color:rgba(79,158,255,0.25);background:var(--accent-dim);}
-  .tag.entry{color:var(--amber);border-color:rgba(245,166,35,0.25);background:var(--amber-dim);}
-  .tag.structure{color:var(--text-dim);}
-  .tag.ltf{color:var(--text-dim);}
 
   /* Win/loss bar */
   .combo-bar-wrap{display:flex;align-items:center;gap:8px;}
-  .combo-bar-track{flex:1;height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;}
+  .combo-bar-track{flex:1;height:2px;background:var(--surface2);border-radius:999px;overflow:hidden;}
   .combo-bar-fill{height:100%;border-radius:999px;transition:width .4s ease;}
   .combo-bar-fill.high{background:var(--teal);}
   .combo-bar-fill.mid{background:var(--amber);}
   .combo-bar-fill.low{background:var(--red);}
+  .combo-bar-fill.none{background:var(--border-active);}
   .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
   .combo-stats span.w{color:var(--teal);}
   .combo-stats span.l{color:var(--red);}
-  .combo-stats span.p{color:var(--amber);}
 
   /* Empty / loading */
   .empty{padding:60px 20px;text-align:center;color:var(--text-muted);}
@@ -133,8 +122,10 @@
     .stats-row{grid-template-columns:1fr 1fr;}
     body{padding:16px 12px 60px;}
     header{flex-direction:column;gap:10px;}
-    .controls{gap:8px;}
-    .combo-winrate{font-size:15px;}
+    .filters{gap:6px;}
+    .filter-group{flex-wrap:wrap;gap:4px;}
+    .filter-btn{padding:5px 10px;font-size:11px;}
+    .filter-divider{display:none;}
   }
 </style>
 </head>
@@ -154,39 +145,30 @@
     </div>
   </header>
 
-  <!-- Stats -->
+  <!-- Stats — 2 cards only -->
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-label">TOTAL VARIATIONS</div>
-      <div class="stat-val accent" id="stat-combos">—</div>
+      <div class="stat-val accent" id="stat-variations">—</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">TOTAL TRADES</div>
       <div class="stat-val" id="stat-trades">—</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">BEST WIN RATE</div>
-      <div class="stat-val teal" id="stat-best">—</div>
-    </div>
-    <div class="stat-card featured">
-      <div class="stat-label">AVG WIN RATE</div>
-      <div class="stat-val accent" id="stat-avg">—</div>
-    </div>
   </div>
 
-  <!-- Controls -->
-  <div class="controls">
-    <span class="control-label">MIN TRADES</span>
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="All" onclick="setTypeFilter('All',this)">All</button>
+      <button class="filter-btn" data-filter="Reversal" onclick="setTypeFilter('Reversal',this)">Reversal</button>
+      <button class="filter-btn" data-filter="Continuation" onclick="setTypeFilter('Continuation',this)">Continuation</button>
+    </div>
+    <div class="filter-divider"></div>
+    <span class="control-label">Min trades</span>
     <input type="number" class="min-inp" id="min-trades" value="1" min="1" max="99" oninput="renderBoard()" />
-    <div class="control-divider"></div>
-    <span class="control-label">TYPE</span>
-    <select class="filter-type" id="filter-type" onchange="renderBoard()">
-      <option value="All">All</option>
-      <option value="Reversal">Reversal</option>
-      <option value="Continuation">Continuation</option>
-    </select>
-    <div class="control-divider"></div>
-    <span class="control-label">SORT BY</span>
+    <div class="filter-divider"></div>
+    <span class="control-label">Sort</span>
     <select class="sort-sel" id="sort-by" onchange="renderBoard()">
       <option value="winrate">Win Rate</option>
       <option value="trades">Most Trades</option>
@@ -196,7 +178,7 @@
 
   <!-- Board -->
   <div class="board" id="board">
-    <div class="loading">Loading combos…</div>
+    <div class="loading">Loading variations…</div>
   </div>
 
 </div>
@@ -207,7 +189,27 @@
 const SUPABASE_URL = 'https://raiojzsbgftepxhahkly.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
-let allCombos = [];
+let allVariations = [];
+let currentTypeFilter = 'All';
+
+// ── Abbreviation maps ─────────────────────────
+const typeAbbr = { 'Reversal':'REV', 'Continuation':'CON' };
+const approachAbbr = { 'Conservative':'CONS', 'Aggressive':'AGG' };
+const structureAbbr = {
+  'Retracement': 'RET',
+  'Consolidation: External Manipulation': 'EXT',
+  'Consolidation: Break & Re-test': 'BNR'
+};
+
+function buildCode(v){
+  const t  = typeAbbr[v.trade_type]   || v.trade_type   || '—';
+  const ap = approachAbbr[v.approach] || v.approach     || '—';
+  const an = v.anchor                 || '—';
+  const ca = v.candle_4h              || '—';
+  const en = v.entry_tf               || '—';
+  const st = structureAbbr[v.structure] || v.structure  || '—';
+  return `${t}-${ap}-${an}-${ca}-${en}-${st}`;
+}
 
 // ── Load & process ────────────────────────────
 async function loadData(){
@@ -217,12 +219,12 @@ async function loadData(){
 
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/trades?select=trade_type,approach,anchor,candle_4h,entry_tf,structure,ltf_level,result&order=created_at.desc',
+      SUPABASE_URL + '/rest/v1/trades?select=trade_type,approach,anchor,candle_4h,entry_tf,structure,result&order=created_at.desc',
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
     );
     if(!res.ok) throw new Error('Failed to load');
     const trades = await res.json();
-    allCombos = buildCombos(trades);
+    allVariations = buildVariations(trades);
     updateStats();
     renderBoard();
     showToast('Loaded ✓');
@@ -236,63 +238,57 @@ async function loadData(){
   }
 }
 
-// ── Build combo map ───────────────────────────
-function buildCombos(trades){
+// ── Build variation map (Step 1–4 only, no LTF) ─
+function buildVariations(trades){
   const map = {};
   trades.forEach(t => {
-    // Build key from all 7 dimensions
     const key = [
-      t.trade_type  || '—',
-      t.approach    || '—',
-      t.anchor      || '—',
-      t.candle_4h   || '—',
-      t.entry_tf    || '—',
-      t.structure   || '—',
-      t.ltf_level   || '—'
+      t.trade_type || '—',
+      t.approach   || '—',
+      t.anchor     || '—',
+      t.candle_4h  || '—',
+      t.entry_tf   || '—',
+      t.structure  || '—'
     ].join('|');
 
     if(!map[key]){
       map[key] = {
-        trade_type: t.trade_type  || '—',
-        approach:   t.approach    || '—',
-        anchor:     t.anchor      || '—',
-        candle_4h:  t.candle_4h   || '—',
-        entry_tf:   t.entry_tf    || '—',
-        structure:  t.structure   || '—',
-        ltf_level:  t.ltf_level   || '—',
-        wins: 0, losses: 0, breakeven: 0, pending: 0, total: 0
+        trade_type: t.trade_type || '—',
+        approach:   t.approach   || '—',
+        anchor:     t.anchor     || '—',
+        candle_4h:  t.candle_4h  || '—',
+        entry_tf:   t.entry_tf   || '—',
+        structure:  t.structure  || '—',
+        wins: 0, losses: 0, total: 0
       };
     }
-    map[key].total++;
-    const r = (t.result||'').toLowerCase();
-    if(r === 'win')           map[key].wins++;
-    else if(r === 'loss')     map[key].losses++;
-    else if(r === 'breakeven') map[key].breakeven++;
-    else                      map[key].pending++;
+
+    const r = (t.result || '').toLowerCase();
+    if(r === 'win'){
+      map[key].wins++;
+      map[key].total++;
+    } else if(r === 'loss'){
+      map[key].losses++;
+      map[key].total++;
+    }
+    // Pending and Breakeven excluded from count
   });
 
   return Object.values(map).map(c => {
-    const closed = c.wins + c.losses + c.breakeven;
+    const closed = c.wins + c.losses;
     c.winrate = closed > 0 ? (c.wins / closed) * 100 : null;
     return c;
-  });
+  }).filter(c => c.total > 0); // only show variations with at least 1 closed trade
 }
 
 // ── Stats ─────────────────────────────────────
 function updateStats(){
-  const combos = allCombos;
-  const totalTrades = combos.reduce((s,c) => s + c.total, 0);
-  const rated = combos.filter(c => c.winrate !== null);
-  const best  = rated.length ? Math.max(...rated.map(c=>c.winrate)) : null;
-  const avg   = rated.length ? rated.reduce((s,c)=>s+c.winrate,0) / rated.length : null;
-
-  document.getElementById('stat-combos').textContent = combos.length;
-  document.getElementById('stat-trades').textContent = totalTrades;
-  document.getElementById('stat-best').textContent   = best !== null ? best.toFixed(1) + '%' : '—';
-  document.getElementById('stat-avg').textContent    = avg  !== null ? avg.toFixed(1)  + '%' : '—';
+  const total = allVariations.reduce((s,c) => s + c.total, 0);
+  document.getElementById('stat-variations').textContent = allVariations.length;
+  document.getElementById('stat-trades').textContent = total;
 }
 
-// ── Win rate color class ──────────────────────
+// ── Rate class ────────────────────────────────
 function rateClass(wr){
   if(wr === null) return 'none';
   if(wr >= 60) return 'high';
@@ -300,21 +296,27 @@ function rateClass(wr){
   return 'low';
 }
 
+// ── Type filter ───────────────────────────────
+function setTypeFilter(type, btn){
+  currentTypeFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBoard();
+}
+
 // ── Render board ──────────────────────────────
 function renderBoard(){
   const board    = document.getElementById('board');
   const minCount = parseInt(document.getElementById('min-trades').value) || 1;
   const sortBy   = document.getElementById('sort-by').value;
-  const typeFilter = document.getElementById('filter-type').value;
 
-  let combos = allCombos.filter(c => {
+  let variations = allVariations.filter(c => {
     const matchMin  = c.total >= minCount;
-    const matchType = typeFilter === 'All' || c.trade_type === typeFilter;
+    const matchType = currentTypeFilter === 'All' || c.trade_type === currentTypeFilter;
     return matchMin && matchType;
   });
 
-  // Sort
-  combos.sort((a, b) => {
+  variations.sort((a, b) => {
     if(sortBy === 'winrate'){
       if(a.winrate === null && b.winrate === null) return 0;
       if(a.winrate === null) return 1;
@@ -326,47 +328,39 @@ function renderBoard(){
     return 0;
   });
 
-  if(!combos.length){
+  if(!variations.length){
     board.innerHTML = `<div class="empty"><h3>No variations found</h3><p>Try lowering the minimum trades filter.</p></div>`;
     return;
   }
 
-  board.innerHTML = combos.map((c, i) => {
+  board.innerHTML = variations.map((c, i) => {
     const rank   = i + 1;
     const rc     = rateClass(c.winrate);
     const wr     = c.winrate !== null ? c.winrate.toFixed(1) + '%' : '—';
     const barW   = c.winrate !== null ? c.winrate.toFixed(1) : 0;
-    const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-    const cardCls = rank <= 3 ? `rank-${rank}` : '';
-
-    const structShort = c.structure
-      .replace('Consolidation: ','')
-      .replace('External Manipulation','Ext. Manip.')
-      .replace('Break & Re-test','B&R');
+    const code   = buildCode(c);
 
     return `
-    <div class="combo-card ${cardCls}">
-      <div class="combo-card-bg ${rc}"></div>
+    <div class="combo-card acc-${rc}">
       <div class="combo-top">
-        <div class="rank-badge ${rankCls}">${rank}</div>
-        <div class="combo-name">${c.trade_type} · ${c.approach} · ${c.anchor} · ${c.candle_4h}</div>
+        <div class="rank-num">${rank}</div>
+        <div class="combo-code">${code}</div>
         <div class="combo-winrate ${rc}">${wr}</div>
       </div>
       <div class="combo-tags">
         <span class="tag type-${c.trade_type}">${c.trade_type}</span>
-        <span class="tag approach">${c.approach}</span>
+        <span class="tag">${c.approach}</span>
         <span class="tag">${c.anchor}</span>
         <span class="tag">${c.candle_4h}</span>
-        <span class="tag entry">${c.entry_tf}</span>
-        <span class="tag structure">${structShort}</span>
-        <span class="tag ltf">${c.ltf_level}</span>
+        <span class="tag">${c.entry_tf}</span>
+        <span class="tag">${c.structure}</span>
       </div>
       <div class="combo-bar-wrap">
         <div class="combo-bar-track">
           <div class="combo-bar-fill ${rc}" style="width:${barW}%"></div>
         </div>
         <div class="combo-stats">
-          <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · <span class="p">${c.pending}P</span> · ${c.total} trades
+          <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
         </div>
       </div>
     </div>`;
@@ -381,7 +375,6 @@ function showToast(msg, isError){
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// Boot
 loadData();
 </script>
 </body>
