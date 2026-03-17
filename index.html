@@ -783,7 +783,14 @@ function loadLast(){
 function copySummary(){
   const s=state;
   const cap=v=>v?v.charAt(0).toUpperCase()+v.slice(1):'';
-  const newsLines=(s.newsItems||[]).filter(n=>n.news).map(n=>'  • '+n.news+(n.time?' @ '+formatNewsTime(n.time):''));
+  const newsItems=(s.newsItems||[]).filter(n=>n.news);
+  // Build news lines: first item gets the label, rest are indented to align
+  const newsLines = newsItems.length ? newsItems.map((n, i) => {
+    const text = n.news + (n.time ? ' @ ' + formatNewsTime(n.time) : '');
+    return i === 0
+      ? '  • News         ' + text
+      : '                 ' + text;
+  }) : [];
   const lines=[
     '==============================',
     '     TRADE SPECIFICATION      ',
