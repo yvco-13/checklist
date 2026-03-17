@@ -155,7 +155,7 @@
   .trade-info-field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:100px;}
   .trade-info-field.narrow{flex:0 0 130px;min-width:0;}
   .trade-info-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;}
-  .trade-info-inp{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 13px;outline:none;transition:border-color .15s;width:100%;}
+  .trade-info-inp{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 13px;outline:none;transition:border-color .15px;width:100%;}
   .trade-info-inp:focus{border-color:var(--accent);}
   .trade-info-inp::placeholder{color:var(--text-muted);}
   .trade-info-inp.filled{border-color:rgba(79,158,255,0.35);color:var(--text);}
@@ -217,7 +217,8 @@
       </div>
     </div>
     <div class="header-actions">
-      <a class="btn-icon" href="/history.html" style="text-decoration:none;">Trade History</a>
+      <a class="btn-icon" href="/history.html">Trade History</a>
+      <a class="btn-icon" href="/leaderboard.html">Leaderboard</a>
       <button class="btn-icon" onclick="loadLast()">Load last</button>
       <button class="btn-icon" onclick="resetAll()">Reset</button>
       <!-- Lock Toggle — Trade Info only -->
@@ -254,7 +255,6 @@
     </div>
     <div class="news-list" id="news-list"></div>
   </div>
-
 
   <div id="info-gate" style="display:none;margin-bottom:12px;padding:10px 16px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);border-radius:10px;font-size:12px;color:var(--amber);font-family:'DM Sans',sans-serif;">
     Fill in Date and Ticker Symbol to unlock the checklist.
@@ -420,9 +420,6 @@
 <div id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
 const state = {
   tradeDate:'', ticker:'', newsItems:[],
   tradeType:null, approach:null,
@@ -432,9 +429,6 @@ const state = {
 let blocked = false;
 let isInfoLocked = false;
 
-// ─────────────────────────────────────────────
-//  LOCK TOGGLE — Trade Info only
-// ─────────────────────────────────────────────
 function toggleInfoLock(){
   isInfoLocked = !isInfoLocked;
   const toggle = document.getElementById('lock-toggle');
@@ -450,9 +444,6 @@ function toggleInfoLock(){
   }
 }
 
-// ─────────────────────────────────────────────
-//  TRADE INFO HANDLERS
-// ─────────────────────────────────────────────
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 function getDayOfWeek(dateStr) {
@@ -537,7 +528,6 @@ function onTicker(val) {
   updateHighlights();
 }
 
-// ── News multi-row ──
 let newsIdCounter = 0;
 
 function addNewsRow(newsVal, timeVal) {
@@ -584,9 +574,6 @@ function removeNewsRow(id) {
   showSummary();
 }
 
-// ─────────────────────────────────────────────
-//  HELPERS
-// ─────────────────────────────────────────────
 function selPill(id, cls){const el=document.getElementById(id);if(el)el.className='pill '+cls;}
 function unlockStep(n){const el=document.getElementById('step'+n);if(el){el.classList.remove('locked');el.classList.add('active');}}
 function completeStep(n,v){const el=document.getElementById('step'+n);if(!el)return;el.classList.remove('active');el.classList.add('done');const ve=document.getElementById('s'+n+'-val');if(ve)ve.textContent=v;}
@@ -652,9 +639,6 @@ function showSummary(){
   updateHighlights();
 }
 
-// ─────────────────────────────────────────────
-//  STEP ACTIONS
-// ─────────────────────────────────────────────
 function pickTradeType(type){
   state.tradeType=type;blocked=false;
   if(type==='reversal'){
@@ -707,7 +691,6 @@ function getRatioInputs(){
   const R=rightEl?parseFloat(rightEl.value):NaN;
   return {L,R};
 }
-
 function validateRatioParts(L,R){
   if(isNaN(L)||isNaN(R)) return {ok:false,err:null};
   if(L<1||R<1) return {ok:false,err:'both values must be 1 or greater'};
@@ -715,49 +698,27 @@ function validateRatioParts(L,R){
   if(L<R) return {ok:false,err:'left ('+L+') must be ≥ right ('+R+')'};
   return {ok:true,L,R};
 }
-
 function onRatioInput(){
   const inp1=document.getElementById('ratio-left'),inp2=document.getElementById('ratio-right');
   const msg=document.getElementById('ratio-msg');
   if(!inp1||!inp2||!msg)return;
   const {L,R}=getRatioInputs();
-  if(isNaN(L)||isNaN(R)){
-    inp1.className='ratio-input';inp2.className='ratio-input';
-    msg.textContent='';msg.className='ratio-msg';
-    state.ratio='';updateProgress();showSummary();return;
-  }
+  if(isNaN(L)||isNaN(R)){inp1.className='ratio-input';inp2.className='ratio-input';msg.textContent='';msg.className='ratio-msg';state.ratio='';updateProgress();showSummary();return;}
   const v=validateRatioParts(L,R);
-  if(!v.ok){
-    inp1.className='ratio-input invalid';inp2.className='ratio-input invalid';
-    msg.className='ratio-msg err';msg.textContent=v.err||'';
-    state.ratio='';updateProgress();showSummary();return;
-  }
-  inp1.className='ratio-input';inp2.className='ratio-input';
-  msg.className='ratio-msg';msg.textContent='press → to confirm '+L+':'+R;
-  state.ratio='';updateProgress();showSummary();
+  if(!v.ok){inp1.className='ratio-input invalid';inp2.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent=v.err||'';state.ratio='';updateProgress();showSummary();return;}
+  inp1.className='ratio-input';inp2.className='ratio-input';msg.className='ratio-msg';msg.textContent='press → to confirm '+L+':'+R;state.ratio='';updateProgress();showSummary();
 }
-
 function confirmRatio(){
   const inp1=document.getElementById('ratio-left'),inp2=document.getElementById('ratio-right');
   const msg=document.getElementById('ratio-msg');
   if(!inp1||!inp2||!msg)return;
   const {L,R}=getRatioInputs();
-  if(isNaN(L)||isNaN(R)){
-    inp1.className='ratio-input';inp2.className='ratio-input';
-    msg.textContent='';msg.className='ratio-msg';
-    state.ratio='';updateProgress();showSummary();return;
-  }
+  if(isNaN(L)||isNaN(R)){inp1.className='ratio-input';inp2.className='ratio-input';msg.textContent='';msg.className='ratio-msg';state.ratio='';updateProgress();showSummary();return;}
   const v=validateRatioParts(L,R);
-  if(!v.ok){
-    inp1.className='ratio-input invalid';inp2.className='ratio-input invalid';
-    msg.className='ratio-msg err';msg.textContent=v.err||'enter valid values';
-    state.ratio='';updateProgress();showSummary();return;
-  }
-  inp1.className='ratio-input valid';inp2.className='ratio-input valid';
-  msg.className='ratio-msg ok';msg.textContent='✓ confirmed — '+L+':'+R;
+  if(!v.ok){inp1.className='ratio-input invalid';inp2.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent=v.err||'enter valid values';state.ratio='';updateProgress();showSummary();return;}
+  inp1.className='ratio-input valid';inp2.className='ratio-input valid';msg.className='ratio-msg ok';msg.textContent='✓ confirmed — '+L+':'+R;
   state.ratio=L+','+R;completeStep(6,'['+L+':'+R+']');unlockStep(7);updateProgress();updateHighlights();showSummary();
 }
-
 function updateRatio(raw){
   if(!raw)return;
   const parts=raw.split(',');
@@ -768,58 +729,30 @@ function updateRatio(raw){
   if(rEl) rEl.value=parts[1].trim();
   confirmRatio();
 }
-
 function onTargetInput(raw){
   const inp=document.getElementById('target-input');
   const msg=document.getElementById('target-msg');
   const trimmed=raw.trim();
-  if(!trimmed){
-    inp.className='ratio-input';msg.textContent='';msg.className='ratio-msg';
-    state.target='';updateProgress();showSummary();return;
-  }
+  if(!trimmed){inp.className='ratio-input';msg.textContent='';msg.className='ratio-msg';state.target='';updateProgress();showSummary();return;}
   const val=parseFloat(trimmed);
-  if(isNaN(val)||val<=0){
-    inp.className='ratio-input invalid';msg.className='ratio-msg err';
-    msg.textContent='please enter a valid number';
-    state.target='';updateProgress();showSummary();return;
-  }
-  if(val<2){
-    inp.className='ratio-input invalid';msg.className='ratio-msg err';
-    msg.textContent='target must be 2R or greater';
-    state.target='';updateProgress();showSummary();return;
-  }
-  inp.className='ratio-input';msg.className='ratio-msg';
-  msg.textContent='press → to confirm '+val.toFixed(2)+'R';
-  state.target='';updateProgress();showSummary();
+  if(isNaN(val)||val<=0){inp.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent='please enter a valid number';state.target='';updateProgress();showSummary();return;}
+  if(val<2){inp.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent='target must be 2R or greater';state.target='';updateProgress();showSummary();return;}
+  inp.className='ratio-input';msg.className='ratio-msg';msg.textContent='press → to confirm '+val.toFixed(2)+'R';state.target='';updateProgress();showSummary();
 }
-
 function confirmTarget(raw){
   const inp=document.getElementById('target-input');
   const msg=document.getElementById('target-msg');
   const trimmed=raw.trim();
-  if(!trimmed){
-    inp.className='ratio-input';msg.textContent='';msg.className='ratio-msg';
-    state.target='';updateProgress();showSummary();return;
-  }
+  if(!trimmed){inp.className='ratio-input';msg.textContent='';msg.className='ratio-msg';state.target='';updateProgress();showSummary();return;}
   const val=parseFloat(trimmed);
-  if(isNaN(val)||val<=0){
-    inp.className='ratio-input invalid';msg.className='ratio-msg err';
-    msg.textContent='please enter a valid number';
-    state.target='';updateProgress();showSummary();return;
-  }
-  if(val<2){
-    inp.className='ratio-input invalid';msg.className='ratio-msg err';
-    msg.textContent='target must be 2R or greater (entered: '+val.toFixed(2)+'R)';
-    state.target='';updateProgress();showSummary();return;
-  }
+  if(isNaN(val)||val<=0){inp.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent='please enter a valid number';state.target='';updateProgress();showSummary();return;}
+  if(val<2){inp.className='ratio-input invalid';msg.className='ratio-msg err';msg.textContent='target must be 2R or greater (entered: '+val.toFixed(2)+'R)';state.target='';updateProgress();showSummary();return;}
   const formatted=val.toFixed(2)+'R';
-  inp.className='ratio-input valid';msg.className='ratio-msg ok';
-  msg.textContent='✓ confirmed — '+formatted;
+  inp.className='ratio-input valid';msg.className='ratio-msg ok';msg.textContent='✓ confirmed — '+formatted;
   inp.value=val.toFixed(2);
   state.target=formatted;
   completeStep(7,formatted);updateProgress();updateHighlights();showSummary();
 }
-
 function updateTarget(raw){ confirmTarget(raw); }
 
 function loadLast(){
@@ -869,29 +802,13 @@ function copySummary(){
     '',
     '— by yvco.',
   ].filter(v=>v!==null).join('\n');
-
   if(navigator.clipboard && window.isSecureContext){
-    navigator.clipboard.writeText(lines)
-      .then(()=>showToast('Copied!'))
-      .catch(()=>fallbackCopy(lines));
-  } else {
-    fallbackCopy(lines);
-  }
+    navigator.clipboard.writeText(lines).then(()=>showToast('Copied!')).catch(()=>fallbackCopy(lines));
+  } else { fallbackCopy(lines); }
 }
-
 function fallbackCopy(text){
-  const ta=document.createElement('textarea');
-  ta.value=text;
-  ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  try{
-    document.execCommand('copy');
-    showToast('Copied!');
-  } catch(e){
-    showToast('Copy failed — try long-pressing the text',true);
-  }
+  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');showToast('Copied!');}catch(e){showToast('Copy failed — try long-pressing the text',true);}
   document.body.removeChild(ta);
 }
 function showToast(msg,isError){
@@ -932,9 +849,6 @@ function resetAll(silent){
   if(!silent)showToast('Checklist reset');
 }
 
-// ─────────────────────────────────────────────
-//  SAVE TO SUPABASE
-// ─────────────────────────────────────────────
 const SUPABASE_URL = 'https://raiojzsbgftepxhahkly.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
@@ -942,12 +856,9 @@ async function saveToDatabase(){
   const btn = document.getElementById('save-db-btn');
   btn.disabled = true;
   btn.textContent = 'Saving…';
-
   const s = state;
   const cap = v => v ? v.charAt(0).toUpperCase()+v.slice(1) : '';
-  const newsText = (s.newsItems||[]).filter(n=>n.news)
-    .map(n=>n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ');
-
+  const newsText = (s.newsItems||[]).filter(n=>n.news).map(n=>n.news+(n.time?' @ '+formatNewsTime(n.time):'')).join(' | ');
   const payload = {
     trade_date:  s.tradeDate   || null,
     day:         getDayOfWeek(s.tradeDate) || null,
@@ -956,15 +867,14 @@ async function saveToDatabase(){
     trade_type:  cap(s.tradeType) || null,
     approach:    cap(s.approach)  || null,
     anchor:      s.anchor      || null,
-    candle:      s.candle      || null,
+    candle_4h:   s.candle      || null,
     entry_tf:    s.entry       || null,
     structure:   s.structure   || null,
     ltf_level:   s.ltf         || null,
     ratio:       s.ratio ? '['+s.ratio.replace(',',':')+']' : null,
-    target:      s.target      || null,
-    outcome:     'Pending'
+    projected_target: s.target || null,
+    result:      'Pending'
   };
-
   try {
     const res = await fetch(SUPABASE_URL + '/rest/v1/trades', {
       method: 'POST',
@@ -976,18 +886,12 @@ async function saveToDatabase(){
       },
       body: JSON.stringify(payload)
     });
-
-    if(!res.ok){
-      const err = await res.text();
-      throw new Error(err || 'Save failed');
-    }
-
+    if(!res.ok){ const err = await res.text(); throw new Error(err || 'Save failed'); }
     showToast('Saved to database ✓');
     btn.textContent = 'Saved ✓';
     btn.style.background = 'var(--teal-dim)';
     btn.style.borderColor = 'var(--teal)';
     btn.style.color = 'var(--teal)';
-
   } catch(err){
     showToast('Save failed — ' + err.message, true);
     btn.disabled = false;
@@ -1002,11 +906,9 @@ function autoSave(){
   localStorage.setItem('tradeChecklist_last', JSON.stringify(Object.assign({},state)));
 }
 
-// Init
 document.getElementById('info-gate').style.display='block';
 updateHighlights();
 
-// ── PWA Service Worker ──────────────────────
 if('serviceWorker' in navigator){
   const swCode = `
     const CACHE = 'trade-checklist-v1';
@@ -1032,7 +934,6 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register(swUrl).catch(()=>{});
 }
 
-// ── PWA Install prompt ──────────────────────
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
