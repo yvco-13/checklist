@@ -532,8 +532,8 @@ function renderTable(){
     return `<tr class="${rowCls}">
       <td class="mono" style="color:var(--text-muted);">${i+1}</td>
       <td class="mono" style="font-size:11px;">${date}</td>
-      <td style="font-weight:600;color:var(--accent);">${e(t.ticker)}</td>
-      <td>${t.trade_type ? `<span class="type-pill type-${t.trade_type}">${t.trade_type}</span>` : `<span class="empty-val">—</span>`}</td>
+      <td style="color:var(--accent);">${e(t.ticker)}</td>
+      <td>${t.trade_type ? `<span style="font-size:11px;font-family:'Space Mono',monospace;font-weight:400;color:${t.trade_type==='Reversal'?'var(--purple)':'var(--teal)'};">${t.trade_type}</span>` : `<span class="empty-val">—</span>`}</td>
       <td class="mono" style="font-size:11px;">${e(t.approach)}</td>
       <td class="mono" style="font-size:11px;white-space:nowrap;">${e(t.anchor)}</td>
       <td class="mono" style="font-size:11px;">${e(t.candle_4h)}</td>
