@@ -64,19 +64,13 @@
   .board{display:flex;flex-direction:column;gap:8px;}
 
   /* Combo card */
-  .combo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s;border-left:2px solid transparent;}
+  .combo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s;}
   .combo-card:hover{border-color:var(--border-active);}
-
-  /* Row left accent by win rate */
-  .combo-card.acc-high{border-left-color:var(--teal);}
-  .combo-card.acc-mid{border-left-color:var(--amber);}
-  .combo-card.acc-low{border-left-color:var(--red);}
-  .combo-card.acc-none{border-left-color:rgba(255,255,255,0.1);}
 
   /* Card top row */
   .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
   .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:right;}
-  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.02em;}
+  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.02em;}
   .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
   .combo-winrate.mid{color:var(--amber);}
@@ -84,10 +78,15 @@
   .combo-winrate.none{color:var(--text-muted);}
 
   /* Tags */
-  .combo-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+  .combo-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
   .tag{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
   .tag.type-Reversal{color:var(--purple);border-color:rgba(167,139,250,0.3);background:var(--purple-dim);}
   .tag.type-Continuation{color:var(--teal);border-color:rgba(0,212,161,0.3);background:var(--teal-dim);}
+  .tag.t-approach{color:var(--accent);border-color:rgba(79,158,255,0.25);background:var(--accent-dim);}
+  .tag.t-anchor{color:var(--amber);border-color:rgba(245,166,35,0.25);background:var(--amber-dim);}
+  .tag.t-candle{color:#ff6b6b;border-color:rgba(255,107,107,0.25);background:rgba(255,107,107,0.08);}
+  .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
+  .tag.t-structure{color:var(--purple);border-color:rgba(167,139,250,0.2);background:rgba(167,139,250,0.06);}
 
   /* Win/loss bar */
   .combo-bar-wrap{display:flex;align-items:center;gap:8px;}
@@ -341,7 +340,7 @@ function renderBoard(){
     const code   = buildCode(c);
 
     return `
-    <div class="combo-card acc-${rc}">
+    <div class="combo-card">
       <div class="combo-top">
         <div class="rank-num">${rank}</div>
         <div class="combo-code">${code}</div>
@@ -349,11 +348,11 @@ function renderBoard(){
       </div>
       <div class="combo-tags">
         <span class="tag type-${c.trade_type}">${c.trade_type}</span>
-        <span class="tag">${c.approach}</span>
-        <span class="tag">${c.anchor}</span>
-        <span class="tag">${c.candle_4h}</span>
-        <span class="tag">${c.entry_tf}</span>
-        <span class="tag">${c.structure}</span>
+        <span class="tag t-approach">${c.approach}</span>
+        <span class="tag t-anchor">${c.anchor}</span>
+        <span class="tag t-candle">${c.candle_4h}</span>
+        <span class="tag t-entry">${c.entry_tf}</span>
+        <span class="tag t-structure">${c.structure}</span>
       </div>
       <div class="combo-bar-wrap">
         <div class="combo-bar-track">
