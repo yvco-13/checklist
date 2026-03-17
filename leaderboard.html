@@ -71,7 +71,7 @@
 
   /* Card top row */
   .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:center;}
+  .rank-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--rose);letter-spacing:.02em;word-break:break-all;}
   .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
@@ -364,10 +364,10 @@ function renderBoard(){
         <span class="tag t-structure">${c.structure}</span>
       </div>
       <div class="combo-bottom">
+        ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : '<div></div>'}
         <div class="combo-stats">
           <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
         </div>
-        ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : ''}
       </div>
     </div>`;
   }).join('');
