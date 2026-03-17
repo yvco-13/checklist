@@ -19,6 +19,8 @@
     --amber:#f5a623; --amber-dim:rgba(245,166,35,0.1);
     --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.1);
     --red:#ef4444; --green:#22c55e;
+    --cyan:#22d3ee; --cyan-dim:rgba(34,211,238,0.08);
+    --rose:#fb7185; --rose-dim:rgba(251,113,133,0.08);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding:32px 16px 80px;}
@@ -70,7 +72,7 @@
   /* Card top row */
   .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
   .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:right;}
-  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.02em;}
+  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--rose);letter-spacing:.02em;}
   .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
   .combo-winrate.mid{color:var(--amber);}
@@ -86,7 +88,7 @@
   .tag.t-anchor{color:var(--amber);border-color:rgba(245,166,35,0.25);background:var(--amber-dim);}
   .tag.t-candle{color:#ff6b6b;border-color:rgba(255,107,107,0.25);background:rgba(255,107,107,0.08);}
   .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
-  .tag.t-structure{color:var(--purple);border-color:rgba(167,139,250,0.2);background:rgba(167,139,250,0.06);}
+  .tag.t-structure{color:var(--cyan);border-color:rgba(34,211,238,0.25);background:var(--cyan-dim);}
 
   /* Win/loss bar */
   .combo-bar-wrap{display:flex;align-items:center;gap:8px;}
