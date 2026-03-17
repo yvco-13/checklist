@@ -90,7 +90,15 @@
   .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
   .tag.t-structure{color:var(--cyan);border-color:rgba(34,211,238,0.25);background:var(--cyan-dim);}
 
-  /* Win/loss bar */
+  /* Ticker toggle */
+  .ticker-toggle{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);cursor:pointer;user-select:none;width:fit-content;}
+  .ticker-toggle-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;transition:color .15s;}
+  .ticker-toggle:hover .ticker-toggle-label{color:var(--text-dim);}
+  .ticker-arrow{font-size:9px;color:var(--text-muted);transition:transform .2s;}
+  .ticker-arrow.open{transform:rotate(180deg);}
+  .ticker-list{display:none;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .ticker-list.open{display:flex;}
+  .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid rgba(251,113,133,0.25);color:var(--rose);background:var(--rose-dim);}
   .combo-bar-wrap{display:flex;align-items:center;gap:8px;}
   .combo-bar-track{flex:1;height:2px;background:var(--surface2);border-radius:999px;overflow:hidden;}
   .combo-bar-fill{height:100%;border-radius:999px;transition:width .4s ease;}
@@ -220,7 +228,7 @@ async function loadData(){
 
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/trades?select=trade_type,approach,anchor,candle_4h,entry_tf,structure,result&order=created_at.desc',
+      SUPABASE_URL + '/rest/v1/trades?select=trade_type,approach,anchor,candle_4h,entry_tf,structure,result,ticker&order=created_at.desc',
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
     );
     if(!res.ok) throw new Error('Failed to load');
@@ -260,8 +268,14 @@ function buildVariations(trades){
         candle_4h:  t.candle_4h  || '—',
         entry_tf:   t.entry_tf   || '—',
         structure:  t.structure  || '—',
-        wins: 0, losses: 0, total: 0
+        wins: 0, losses: 0, total: 0,
+        tickers: {}
       };
+    }
+
+    // Track ticker counts
+    if(t.ticker){
+      map[key].tickers[t.ticker] = (map[key].tickers[t.ticker] || 0) + 1;
     }
 
     const r = (t.result || '').toLowerCase();
@@ -341,6 +355,12 @@ function renderBoard(){
     const barW   = c.winrate !== null ? c.winrate.toFixed(1) : 0;
     const code   = buildCode(c);
 
+    const tickerChips = Object.entries(c.tickers)
+      .sort((a,b) => b[1]-a[1])
+      .map(([t,n]) => `<span class="ticker-chip">${t} (${n})</span>`)
+      .join('');
+    const tickerCount = Object.keys(c.tickers).length;
+
     return `
     <div class="combo-card">
       <div class="combo-top">
@@ -364,8 +384,22 @@ function renderBoard(){
           <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
         </div>
       </div>
+      ${tickerCount > 0 ? `
+      <div class="ticker-toggle" onclick="toggleTickers(this)">
+        <span class="ticker-toggle-label">TICKERS (${tickerCount})</span>
+        <span class="ticker-arrow">▾</span>
+      </div>
+      <div class="ticker-list">${tickerChips}</div>` : ''}
     </div>`;
   }).join('');
+}
+
+function toggleTickers(toggleEl){
+  const arrow = toggleEl.querySelector('.ticker-arrow');
+  const list  = toggleEl.nextElementSibling;
+  const isOpen = list.classList.contains('open');
+  list.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
 }
 
 function showToast(msg, isError){
