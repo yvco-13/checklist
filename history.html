@@ -31,6 +31,7 @@
   .header-left p{font-size:13px;color:var(--text-muted);margin-top:4px;}
   .header-left .creator{font-size:11px;font-family:'Space Mono',monospace;color:var(--amber);margin-top:6px;letter-spacing:.04em;}
   .header-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;align-items:center;}
+  .nav-group{display:inline-flex;align-items:center;gap:4px;padding:4px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;}
   .btn-icon{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-family:'DM Sans',sans-serif;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
   .btn-icon:hover{border-color:var(--border-active);color:var(--text);background:var(--surface2);}
   .btn-icon:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none;}
@@ -237,8 +238,10 @@
       <div class="creator">by yvco.</div>
     </div>
     <div class="header-actions">
-      <a class="btn-icon" href="/">Checklist</a>
-      <a class="btn-icon" href="/leaderboard.html">Leaderboard</a>
+      <div class="nav-group">
+        <a class="btn-icon" href="/">Checklist</a>
+        <a class="btn-icon" href="/leaderboard.html">Leaderboard</a>
+      </div>
       <button class="btn-icon" onclick="exportCSV()">Export CSV</button>
       <button class="btn-icon" id="refresh-btn" onclick="loadTrades()">Refresh</button>
       <div class="lock-toggle" id="lock-toggle" onclick="toggleLock()" title="Lock / unlock all inputs">
