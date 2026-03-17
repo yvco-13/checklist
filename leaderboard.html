@@ -90,13 +90,13 @@
   .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
   .tag.t-structure{color:var(--cyan);border-color:rgba(34,211,238,0.25);background:var(--cyan-dim);}
 
-  /* Ticker toggle */
-  .ticker-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
-  .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
-  .combo-divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
-  .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;}
+  /* Card bottom — 2 column split */
+  .combo-bottom{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:10px;border-top:1px solid var(--border);}
+  .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
   .combo-stats span.w{color:var(--teal);}
   .combo-stats span.l{color:var(--red);}
+  .ticker-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;}
+  .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
 
   /* Empty / loading */
   .empty{padding:60px 20px;text-align:center;color:var(--text-muted);}
@@ -363,11 +363,12 @@ function renderBoard(){
         <span class="tag t-entry">${c.entry_tf}</span>
         <span class="tag t-structure">${c.structure}</span>
       </div>
-      <hr class="combo-divider" />
-      <div class="combo-stats">
-        <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
+      <div class="combo-bottom">
+        <div class="combo-stats">
+          <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
+        </div>
+        ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : ''}
       </div>
-      ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : ''}
     </div>`;
   }).join('');
 }
