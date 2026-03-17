@@ -71,8 +71,8 @@
 
   /* Card top row */
   .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:right;}
-  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--rose);letter-spacing:.02em;}
+  .rank-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);width:20px;flex-shrink:0;text-align:center;}
+  .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:11px;color:var(--rose);letter-spacing:.02em;word-break:break-all;}
   .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
   .combo-winrate.mid{color:var(--amber);}
@@ -91,22 +91,10 @@
   .tag.t-structure{color:var(--cyan);border-color:rgba(34,211,238,0.25);background:var(--cyan-dim);}
 
   /* Ticker toggle */
-  .ticker-toggle{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);cursor:pointer;user-select:none;width:fit-content;}
-  .ticker-toggle-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;transition:color .15s;}
-  .ticker-toggle:hover .ticker-toggle-label{color:var(--text-dim);}
-  .ticker-arrow{font-size:9px;color:var(--text-muted);transition:transform .2s;}
-  .ticker-arrow.open{transform:rotate(180deg);}
-  .ticker-list{display:none;flex-wrap:wrap;gap:6px;margin-top:8px;}
-  .ticker-list.open{display:flex;}
-  .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid rgba(251,113,133,0.25);color:var(--rose);background:var(--rose-dim);}
-  .combo-bar-wrap{display:flex;align-items:center;gap:8px;}
-  .combo-bar-track{flex:1;height:2px;background:var(--surface2);border-radius:999px;overflow:hidden;}
-  .combo-bar-fill{height:100%;border-radius:999px;transition:width .4s ease;}
-  .combo-bar-fill.high{background:var(--teal);}
-  .combo-bar-fill.mid{background:var(--amber);}
-  .combo-bar-fill.low{background:var(--red);}
-  .combo-bar-fill.none{background:var(--border-active);}
-  .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
+  .ticker-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
+  .combo-divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;}
   .combo-stats span.w{color:var(--teal);}
   .combo-stats span.l{color:var(--red);}
 
@@ -352,7 +340,6 @@ function renderBoard(){
     const rank   = i + 1;
     const rc     = rateClass(c.winrate);
     const wr     = c.winrate !== null ? c.winrate.toFixed(1) + '%' : '—';
-    const barW   = c.winrate !== null ? c.winrate.toFixed(1) : 0;
     const code   = buildCode(c);
 
     const tickerChips = Object.entries(c.tickers)
@@ -376,30 +363,13 @@ function renderBoard(){
         <span class="tag t-entry">${c.entry_tf}</span>
         <span class="tag t-structure">${c.structure}</span>
       </div>
-      <div class="combo-bar-wrap">
-        <div class="combo-bar-track">
-          <div class="combo-bar-fill ${rc}" style="width:${barW}%"></div>
-        </div>
-        <div class="combo-stats">
-          <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
-        </div>
+      <hr class="combo-divider" />
+      <div class="combo-stats">
+        <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
       </div>
-      ${tickerCount > 0 ? `
-      <div class="ticker-toggle" onclick="toggleTickers(this)">
-        <span class="ticker-toggle-label">TICKERS (${tickerCount})</span>
-        <span class="ticker-arrow">▾</span>
-      </div>
-      <div class="ticker-list">${tickerChips}</div>` : ''}
+      ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : ''}
     </div>`;
   }).join('');
-}
-
-function toggleTickers(toggleEl){
-  const arrow = toggleEl.querySelector('.ticker-arrow');
-  const list  = toggleEl.nextElementSibling;
-  const isOpen = list.classList.contains('open');
-  list.classList.toggle('open', !isOpen);
-  arrow.classList.toggle('open', !isOpen);
 }
 
 function showToast(msg, isError){
