@@ -291,12 +291,13 @@
           <th class="exec-col">Exit</th>
           <th class="exec-col">Achieved Target</th>
           <th class="exec-col">Result</th>
+          <th class="exec-col">Outcome</th>
           <th style="border-left:1px solid rgba(79,158,255,0.2);background:rgba(79,158,255,0.02);white-space:nowrap;">News</th>
           <th style="background:rgba(79,158,255,0.02);"></th>
         </tr>
       </thead>
       <tbody id="trades-body">
-        <tr><td colspan="18"><div class="loading">Loading trades…</div></td></tr>
+        <tr><td colspan="19"><div class="loading">Loading trades…</div></td></tr>
       </tbody>
     </table>
   </div>
@@ -380,7 +381,7 @@ async function loadTrades(){
     renderTable();
   } catch(err){
     document.getElementById('trades-body').innerHTML =
-      `<tr><td colspan="18"><div class="empty"><h3>Could not load trades</h3><p>${err.message}</p></div></td></tr>`;
+      `<tr><td colspan="19"><div class="empty"><h3>Could not load trades</h3><p>${err.message}</p></div></td></tr>`;
   }
 }
 
@@ -455,7 +456,7 @@ function renderTable(){
   updateStats();
 
   if(!trades.length){
-    tbody.innerHTML = `<tr><td colspan="18"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="19"><div class="empty"><h3>No trades found</h3><p>${currentFilter === 'All' ? 'Complete your checklist and click "Save to database".' : 'No '+currentFilter+' trades yet.'}</p></div></td></tr>`;
     return;
   }
 
@@ -514,9 +515,8 @@ function renderTable(){
         </div>
       </td>
 
-
       <!-- Actual Result -->
-      <td class="exec-col" id="result-${t.id}">
+      <td class="exec-col">
         <div style="display:flex;align-items:center;gap:4px;">
           <input type="text" class="lockable-input" value="${t.actual_result||''}" placeholder=""
             onchange="updateField(${t.id},'actual_result',this.value,event)"
@@ -559,13 +559,11 @@ function formatAchievedTarget(input){
 
 // ── Update achieved target ────────────────────
 async function updateAchievedTarget(id, value, event){
-  // Format to 2 decimal places
   let saveVal = null;
   if(value !== '' && value !== null){
     const num = parseFloat(value);
     if(!isNaN(num)){
       saveVal = parseFloat(num.toFixed(2));
-      // Update the input display
       const inp = event && event.target ? event.target : null;
       if(inp) inp.value = saveVal.toFixed(2);
     }
@@ -655,7 +653,6 @@ function closeDeleteModal(){
   document.getElementById('delete-modal').classList.remove('show');
 }
 
-// Close on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('delete-modal').addEventListener('click', function(e){
     if(e.target === this) closeDeleteModal();
@@ -663,7 +660,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('modal-confirm-btn').addEventListener('click', confirmDelete);
 });
 
-// Close on Escape
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') closeDeleteModal();
 });
