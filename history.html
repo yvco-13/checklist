@@ -317,10 +317,27 @@
     .date-inp{font-size:11px;}
     .ticker-search{width:100%;}
     .header-actions{flex-wrap:wrap;gap:6px;}
+
+    /* Mobile: always freeze only Ticker (col 3), override unfrozen state */
+    th:nth-child(3), td:nth-child(3){
+      position:sticky !important;
+      left:0 !important;
+      z-index:3 !important;
+      box-shadow:2px 0 8px rgba(0,0,0,0.35) !important;
+      background:var(--surface2) !important;
+    }
+    td:nth-child(3){background:var(--surface) !important;}
+    /* Keep #/Date unfrozen on mobile regardless of toggle */
+    th:nth-child(1), td:nth-child(1),
+    th:nth-child(2), td:nth-child(2){
+      position:static !important;
+      box-shadow:none !important;
+      z-index:auto !important;
+    }
   }
 </style>
 </head>
-<body>
+<body class="cols-unfrozen">
 <div class="app-wrapper">
 
   <header>
@@ -385,9 +402,9 @@
       <button class="date-clear" onclick="clearDateFilter()" title="Clear dates">✕</button>
     </div>
     <div class="filter-divider"></div>
-    <div class="freeze-toggle frozen" id="freeze-toggle" onclick="toggleFreeze()" title="Freeze / unfreeze columns #, Date, Ticker">
+    <div class="freeze-toggle" id="freeze-toggle" onclick="toggleFreeze()" title="Freeze / unfreeze columns #, Date, Ticker">
       <div class="freeze-switch"></div>
-      <span class="freeze-toggle-label" id="freeze-label">Freeze</span>
+      <span class="freeze-toggle-label" id="freeze-label">Unfreeze</span>
     </div>
   </div>
 
@@ -471,7 +488,7 @@ function toggleLock(){
 }
 
 // ── Freeze toggle ────────────────────────────
-let isFrozen = true; // default ON
+let isFrozen = false; // default OFF
 
 function toggleFreeze(){
   isFrozen = !isFrozen;
@@ -498,11 +515,19 @@ function posSelClass(val){
   return 'pos-none';
 }
 
-// ── Direction pill HTML ───────────────────────
+// ── Open Position plain text HTML ────────────
+function posTextHTML(val){
+  if(!val) return `<span class="empty-val">—</span>`;
+  const v = val.toLowerCase();
+  const color = v === 'above' ? 'var(--teal)' : v === 'below' ? 'var(--red)' : v === 'within' ? 'var(--amber)' : 'var(--text-dim)';
+  return `<span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:600;color:${color};">${val}</span>`;
+}
+
+// ── Direction text HTML ───────────────────────
 function directionHTML(val){
   if(!val) return `<span class="empty-val">—</span>`;
-  const cls = val === 'Long' ? 'dir-Long' : val === 'Short' ? 'dir-Short' : 'dir-other';
-  return `<span class="dir-pill ${cls}">${val}</span>`;
+  const color = val === 'Long' ? 'var(--teal)' : val === 'Short' ? 'var(--red)' : 'var(--text-dim)';
+  return `<span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:600;color:${color};">${val}</span>`;
 }
 
 // ── Export CSV ───────────────────────────────
@@ -667,8 +692,6 @@ function renderTable(){
 
     const tsCls  = targetSelClass(t.target_status);
     const resCls = resultSelClass(t.result);
-    const woCls  = posSelClass(t.w_open_position);
-    const doCls  = posSelClass(t.d_open_position);
     const rowCls = t.result ? 'row-' + t.result : 'row-Pending';
     const entryWrapCls = t.entry_time ? 'time-wrap has-value' : 'time-wrap';
     const exitWrapCls  = t.exit_time  ? 'time-wrap has-value' : 'time-wrap';
@@ -690,24 +713,12 @@ function renderTable(){
 
       <!-- W/O Position -->
       <td class="exec-sep exec-col">
-        <select class="pos-sel lockable-select ${woCls}" id="wo-${t.id}"
-          onchange="updatePosField(${t.id},'w_open_position','wo-${t.id}',this)">
-          <option value="" ${!t.w_open_position?'selected':''}>—</option>
-          <option ${t.w_open_position==='Above' ?'selected':''}>Above</option>
-          <option ${t.w_open_position==='Below' ?'selected':''}>Below</option>
-          <option ${t.w_open_position==='Within'?'selected':''}>Within</option>
-        </select>
+        ${posTextHTML(t.w_open_position)}
       </td>
 
       <!-- D/O Position -->
       <td class="exec-col">
-        <select class="pos-sel lockable-select ${doCls}" id="do-${t.id}"
-          onchange="updatePosField(${t.id},'d_open_position','do-${t.id}',this)">
-          <option value="" ${!t.d_open_position?'selected':''}>—</option>
-          <option ${t.d_open_position==='Above' ?'selected':''}>Above</option>
-          <option ${t.d_open_position==='Below' ?'selected':''}>Below</option>
-          <option ${t.d_open_position==='Within'?'selected':''}>Within</option>
-        </select>
+        ${posTextHTML(t.d_open_position)}
       </td>
 
       <!-- Entry -->
