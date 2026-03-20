@@ -471,6 +471,18 @@
 </div>
 
 <script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _sb = window.supabase.createClient(
+    'https://raiojzsbgftepxhahkly.supabase.co',
+    'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD'
+  );
+  _sb.auth.getSession().then(({ data }) => {
+    if (!data.session) window.location.href = '/login.html';
+  });
+</script>
+
+<script>
 const SUPABASE_URL = 'https://raiojzsbgftepxhahkly.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
