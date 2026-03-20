@@ -37,53 +37,120 @@
   .btn-icon:hover{border-color:var(--border-active);color:var(--text);background:var(--surface2);}
   .btn-icon:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none;}
 
-  /* Refresh spinner */
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border-active);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;}
 
-  /* Stats row — 2 cards only */
+  /* Stats row */
   .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
   .stat-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
   .stat-val{font-size:22px;font-family:'Space Mono',monospace;color:var(--text);}
   .stat-val.accent{color:var(--accent);}
+  .stat-sub{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);margin-top:4px;letter-spacing:.02em;}
 
-  /* Filters — match trade history style */
-  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+  /* Denominator tooltip */
+  .denom-wrap{display:inline;position:relative;}
+  .denom{color:var(--text-muted);cursor:default;border-bottom:1px dashed rgba(255,255,255,0.15);transition:color .15s,border-color .15s;}
+  .denom-wrap:hover .denom{color:var(--text-dim);border-color:rgba(255,255,255,0.3);}
+  .denom-tip{position:fixed;background:var(--surface2);border:1px solid var(--border-active);border-radius:9px;padding:10px 13px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.6);max-height:min(320px,70vh);overflow-y:auto;overflow-x:hidden;}
+  .denom-tip::-webkit-scrollbar{width:3px;}
+  .denom-tip::-webkit-scrollbar-track{background:transparent;}
+  .denom-tip::-webkit-scrollbar-thumb{background:var(--border-active);border-radius:999px;}
+  .denom-wrap:hover .denom-tip{opacity:1;}
+  .denom-tip-title{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);margin-bottom:7px;letter-spacing:.02em;}
+  .denom-tip-row{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);margin-top:3px;}
+  .denom-tip-row .dk{color:var(--text-dim);}
+  .denom-tip-row .dv{color:var(--accent);}
+  .denom-tip-sep{border-top:1px solid var(--border);margin:7px 0;}
+  .denom-tip-total{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:11px;font-family:'Space Mono',monospace;}
+  .denom-tip-total .dk{color:var(--text-dim);}
+  .denom-tip-total .dv{color:var(--teal);font-weight:700;}
+  /* Arrow removed — tooltip is position:fixed, arrow direction is dynamic */
+
+  /* Filters */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;row-gap:8px;}
   .filter-group{display:flex;align-items:center;gap:6px;padding:4px 6px;background:var(--surface2);border-radius:10px;}
   .filter-btn{padding:6px 14px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all .15s;}
   .filter-btn:hover{color:var(--text);background:rgba(255,255,255,0.05);}
   .filter-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
-  .filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0;}
+  .filter-divider{width:1px;height:18px;background:var(--border);margin:0 4px;flex-shrink:0;align-self:center;}
   .min-inp{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:5px 10px;outline:none;width:52px;text-align:center;-moz-appearance:textfield;transition:border-color .15s;}
   .min-inp::-webkit-outer-spin-button,.min-inp::-webkit-inner-spin-button{-webkit-appearance:none;}
   .min-inp:focus{border-color:var(--accent);}
-  .control-label{font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-muted);white-space:nowrap;}
+  .control-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;letter-spacing:.03em;}
   .sort-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;color-scheme:dark;transition:border-color .15s;}
   .sort-sel option{background:#1c2130;color:var(--text);}
   .sort-sel:focus{border-color:var(--accent);}
 
+  /* Add Variable button */
+  .btn-add-var{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;background:transparent;border:1px dashed rgba(79,158,255,0.4);border-radius:8px;color:var(--accent);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .18s;flex-shrink:0;}
+  .btn-add-var:hover{border-style:solid;border-color:var(--accent);background:var(--accent-dim);}
+  .btn-add-var .plus-icon{font-size:14px;line-height:1;}
+  .add-var-group{display:inline-flex;align-items:center;gap:4px;}
+  .var-count-badge{background:var(--accent);color:#071428;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;padding:2px 7px;border-radius:5px;line-height:1.6;margin-left:2px;}
+  .btn-clear-vars{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:transparent;border:none;border-radius:50%;color:var(--text-muted);font-size:14px;line-height:1;cursor:pointer;transition:color .15s,transform .15s;flex-shrink:0;padding:0;opacity:0.5;}
+  .btn-clear-vars:hover{color:var(--red);opacity:1;transform:scale(1.2);}
+
+  /* Modal overlay */
+  .modal-overlay{position:fixed;inset:0;background:rgba(5,7,12,0.7);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+
+  .modal{background:var(--surface);border:1px solid var(--border-active);border-radius:16px;width:360px;max-width:calc(100vw - 32px);overflow:hidden;transform:translateY(14px) scale(0.97);transition:transform .22s cubic-bezier(.22,1,.36,1);box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);}
+  .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+
+  .modal-header{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--border);}
+  .modal-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.3px;}
+  .modal-subtitle{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;}
+  .modal-close{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:14px;width:28px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;margin-top:1px;}
+  .modal-close:hover{border-color:var(--border-active);color:var(--text);background:#252c3d;}
+
+  .modal-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:7px;}
+
+  /* Variable row in modal */
+  .var-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:border-color .15s,background .15s;gap:10px;}
+  .var-row:hover{border-color:var(--border-active);}
+  .var-row.is-active{border-color:rgba(79,158,255,0.35);background:var(--accent-dim);}
+  .var-row-name{font-size:13px;font-weight:500;color:var(--text);}
+  .var-toggle{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:300;line-height:1;transition:all .15s;flex-shrink:0;color:var(--text-muted);}
+  .var-toggle:hover{border-color:rgba(79,158,255,0.5);color:var(--accent);background:var(--accent-dim);}
+  .var-row.is-active .var-toggle{background:var(--accent);border-color:var(--accent);color:#071428;font-size:14px;}
+
+  /* Reference card */
+  .ref-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+  .ref-toggle{width:100%;display:flex;align-items:center;gap:8px;padding:11px 16px;background:transparent;border:none;cursor:pointer;color:var(--text-dim);text-align:left;transition:background .15s;}
+  .ref-toggle:hover{background:var(--surface2);}
+  .ref-toggle-icon{font-size:10px;color:var(--text-muted);transition:transform .2s;flex-shrink:0;}
+  .ref-toggle-hint{font-size:11px;color:var(--text-muted);margin-left:auto;font-family:'DM Sans',sans-serif;}
+  .ref-body{padding:14px 16px 16px;border-top:1px solid var(--border);}
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+  .ref-group{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+  .ref-group.is-optional{border-color:rgba(79,158,255,0.15);opacity:0.55;transition:opacity .2s,border-color .2s;}
+  .ref-group.is-optional.is-active{opacity:1;border-color:rgba(79,158,255,0.35);background:var(--accent-dim);}
+  .ref-group-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--text-muted);letter-spacing:.05em;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+  .ref-group-label .opt-badge{font-size:9px;padding:1px 5px;border-radius:4px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(79,158,255,0.25);}
+  .ref-group-label .active-badge{font-size:9px;padding:1px 5px;border-radius:4px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,212,161,0.25);}
+  .ref-item{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;}
+  .ref-item-full{font-size:11px;color:var(--text-dim);font-family:'DM Sans',sans-serif;}
+  .ref-item-abbr{font-size:10px;font-family:'Space Mono',monospace;color:var(--rose);background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);padding:1px 6px;border-radius:4px;flex-shrink:0;}
+
   /* Board */
   .board{display:flex;flex-direction:column;gap:8px;}
 
-  /* Combo card */
   .combo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .2s,background .2s;}
   .combo-card:hover{border-color:var(--border-active);background:var(--surface2);}
 
-  /* Card top row */
   .combo-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .rank-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+  .rank-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .rank-num.r1{color:#f5a623;border-color:rgba(245,166,35,0.5);background:rgba(245,166,35,0.08);}
   .rank-num.r2{color:#8a94a8;border-color:rgba(138,148,168,0.4);background:rgba(138,148,168,0.08);}
   .rank-num.r3{color:#b06f4a;border-color:rgba(176,111,74,0.4);background:rgba(176,111,74,0.08);}
   .combo-code{flex:1;font-family:'Space Mono',monospace;font-size:12px;color:var(--rose);letter-spacing:.02em;word-break:break-all;}
-  .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;font-weight:400;flex-shrink:0;}
+  .combo-winrate{font-family:'Space Mono',monospace;font-size:14px;flex-shrink:0;}
   .combo-winrate.high{color:var(--teal);}
   .combo-winrate.mid{color:var(--amber);}
   .combo-winrate.low{color:var(--red);}
   .combo-winrate.none{color:var(--text-muted);}
 
-  /* Tags */
   .combo-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
   .tag{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
   .tag.type-Reversal{color:var(--purple);border-color:rgba(167,139,250,0.3);background:var(--purple-dim);}
@@ -91,10 +158,13 @@
   .tag.t-approach{color:var(--accent);border-color:rgba(79,158,255,0.25);background:var(--accent-dim);}
   .tag.t-anchor{color:var(--amber);border-color:rgba(245,166,35,0.25);background:var(--amber-dim);}
   .tag.t-candle{color:#ff6b6b;border-color:rgba(255,107,107,0.25);background:rgba(255,107,107,0.08);}
-  .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
   .tag.t-structure{color:var(--cyan);border-color:rgba(34,211,238,0.25);background:var(--cyan-dim);}
+  .tag.t-entry{color:var(--green);border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.08);}
+  .tag.t-ltf{color:var(--purple);border-color:rgba(167,139,250,0.25);background:var(--purple-dim);}
+  .tag.t-direction{color:var(--rose);border-color:rgba(251,113,133,0.25);background:var(--rose-dim);}
+  .tag.t-wopen{color:var(--teal);border-color:rgba(0,212,161,0.25);background:var(--teal-dim);}
+  .tag.t-dopen{color:var(--amber);border-color:rgba(245,166,35,0.25);background:var(--amber-dim);}
 
-  /* Card bottom — 2 column split */
   .combo-bottom{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:10px;border-top:1px solid var(--border);}
   .combo-stats{font-size:11px;font-family:'Space Mono',monospace;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
   .combo-stats span.w{color:var(--teal);}
@@ -102,18 +172,15 @@
   .ticker-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;}
   .ticker-chip{font-size:10px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text-muted);background:var(--surface2);}
 
-  /* Empty / loading */
   .empty{padding:60px 20px;text-align:center;color:var(--text-muted);}
   .empty h3{font-family:'Space Mono',monospace;font-size:14px;margin-bottom:8px;color:var(--text-dim);}
   .empty p{font-size:13px;}
   .loading{padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;color:var(--text-muted);}
 
-  /* Toast */
   #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--teal);color:#0d1a14;font-size:13px;font-weight:600;padding:10px 20px;border-radius:10px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;font-family:'DM Sans',sans-serif;z-index:9999;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.error{background:var(--red);color:#fff;}
 
-  /* Scrollbar */
   ::-webkit-scrollbar{width:6px;height:6px;}
   ::-webkit-scrollbar-track{background:#141720;}
   ::-webkit-scrollbar-thumb{background:#2a3040;border-radius:999px;}
@@ -124,8 +191,6 @@
     body{padding:16px 12px 60px;}
     header{flex-direction:column;gap:10px;}
     .filters{gap:6px;}
-    .filter-group{flex-wrap:wrap;gap:4px;}
-    .filter-btn{padding:5px 10px;font-size:11px;}
     .filter-divider{display:none;}
   }
 </style>
@@ -148,7 +213,7 @@
     </div>
   </header>
 
-  <!-- Stats — 2 cards only -->
+  <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-label">TOTAL VARIATIONS</div>
@@ -167,6 +232,22 @@
       <button class="filter-btn" data-filter="Reversal" onclick="setTypeFilter('Reversal',this)">Reversal</button>
       <button class="filter-btn" data-filter="Continuation" onclick="setTypeFilter('Continuation',this)">Continuation</button>
     </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- Add variable -->
+    <div class="add-var-group">
+      <button class="btn-add-var" onclick="openModal()" id="btn-add-var">
+        <span class="plus-icon">+</span>
+        Add Variable<span class="var-count-badge" id="var-count-badge" style="display:none;"></span>
+      </button>
+      <button class="btn-clear-vars" id="btn-clear-vars" onclick="clearAllVars()" title="Remove all added variables" style="display:none;">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
     <div class="filter-divider"></div>
     <span class="control-label">Min trades</span>
     <input type="number" class="min-inp" id="min-trades" value="1" min="1" max="99" oninput="renderBoard()" />
@@ -179,11 +260,37 @@
     </select>
   </div>
 
+  <!-- Variable Reference Card -->
+  <div class="ref-card" id="ref-card">
+    <button class="ref-toggle" onclick="toggleRef()" id="ref-toggle">
+      <span class="ref-toggle-icon" id="ref-icon">▸</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;">SHORTCODE REFERENCE</span>
+      <span class="ref-toggle-hint">click to expand</span>
+    </button>
+    <div class="ref-body" id="ref-body" style="display:none;">
+      <div class="ref-grid" id="ref-grid"></div>
+    </div>
+  </div>
+
   <!-- Board -->
   <div class="board" id="board">
     <div class="loading">Loading variations…</div>
   </div>
 
+</div>
+
+<!-- Add Variable Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Add Variable</div>
+        <div class="modal-subtitle">Toggle extra fields to include in grouping.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -192,168 +299,309 @@
 const SUPABASE_URL = 'https://raiojzsbgftepxhahkly.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kglok1CLL_oVfzAtCiXk1g_FPAmdjAD';
 
+// ── Variable definitions ──────────────────────────────────────────────────────
+
+const DEFAULT_VARS = [
+  { key: 'trade_type', label: 'Type' },
+  { key: 'approach',   label: 'Approach' },
+  { key: 'anchor',     label: 'Anchor' },
+  { key: 'candle_4h',  label: 'Candle 4H' },
+  { key: 'structure',  label: 'Structure' },
+];
+
+const OPTIONAL_VARS = [
+  { key: 'entry_tf',        label: 'Entry TF' },
+  { key: 'ltf_level',       label: 'LTF Level' },
+  { key: 'direction',       label: 'Direction' },
+  { key: 'w_open_position', label: 'W/O Position' },
+  { key: 'd_open_position', label: 'D/O Position' },
+];
+
+let activeOptional = new Set();
+
+// ── Abbreviation maps ─────────────────────────────────────────────────────────
+const ABBR_MAP = {
+  trade_type: {
+    'Reversal':     'REV',
+    'Continuation': 'CON',
+  },
+  approach: {
+    'Conservative': 'CONS',
+    'Aggressive':   'AGG',
+  },
+  anchor: {
+    'C2 → C3': 'C2→C3',
+    'C3 → C4': 'C3→C4',
+    'C2':      'C2',
+    'C3':      'C3',
+  },
+  structure: {
+    'Retracement':                          'RET',
+    'Consolidation: External Manipulation': 'EXT',
+    'Consolidation: Break & Re-test':       'BNR',
+  },
+  entry_tf: {
+    '45m':'45m','30m':'30m','15m':'15m','5m':'5m','3m':'3m',
+  },
+  ltf_level: {
+    'Swing High/Low':       'SHL',
+    'Swing High/Low (SMT)': 'SHLSMT',
+    'FVG':                  'FVG',
+    'Opposing candle':      'OPC',
+  },
+  direction: {
+    'Long':  'LONG',
+    'Short': 'SHORT',
+  },
+  w_open_position: {
+    'Above':  'W-ABV',
+    'Below':  'W-BLW',
+    'Within': 'W-WTH',
+  },
+  d_open_position: {
+    'Above':  'D-ABV',
+    'Below':  'D-BLW',
+    'Within': 'D-WTH',
+  },
+};
+
+function abbrFor(key, val) {
+  if (!val || val === '—') return '—';
+  return (ABBR_MAP[key] && ABBR_MAP[key][val]) || val;
+}
+
+function buildCode(v) {
+  const active = [
+    ...DEFAULT_VARS,
+    ...OPTIONAL_VARS.filter(o => activeOptional.has(o.key))
+  ];
+  return active.map(def => abbrFor(def.key, v[def.key] || '—')).join(' · ');
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let rawTrades    = [];
 let allVariations = [];
 let currentTypeFilter = 'All';
 
-// ── Abbreviation maps ─────────────────────────
-const typeAbbr = { 'Reversal':'REV', 'Continuation':'CON' };
-const approachAbbr = { 'Conservative':'CONS', 'Aggressive':'AGG' };
-const structureAbbr = {
-  'Retracement': 'RET',
-  'Consolidation: External Manipulation': 'EXT',
-  'Consolidation: Break & Re-test': 'BNR'
-};
-
-function buildCode(v){
-  const t  = typeAbbr[v.trade_type]   || v.trade_type   || '—';
-  const ap = approachAbbr[v.approach] || v.approach     || '—';
-  const an = v.anchor                 || '—';
-  const ca = v.candle_4h              || '—';
-  const en = v.entry_tf               || '—';
-  const st = structureAbbr[v.structure] || v.structure  || '—';
-  return `${t}-${ap}-${an}-${ca}-${en}-${st}`;
-}
-
-// ── Load & process ────────────────────────────
-async function loadData(){
+// ── Load ──────────────────────────────────────────────────────────────────────
+async function loadData() {
   const btn = document.getElementById('refresh-btn');
   btn.innerHTML = '<span class="spin"></span> Loading';
-  btn.disabled = true;
+  btn.disabled  = true;
+
+  const allKeys    = [...DEFAULT_VARS, ...OPTIONAL_VARS].map(d => d.key);
+  const selectFields = [...allKeys, 'result', 'ticker'].join(',');
 
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/trades?select=trade_type,approach,anchor,candle_4h,entry_tf,structure,result,ticker&order=created_at.desc',
+      `${SUPABASE_URL}/rest/v1/trades?select=${selectFields}&order=created_at.desc`,
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
     );
-    if(!res.ok) throw new Error('Failed to load');
-    const trades = await res.json();
-    allVariations = buildVariations(trades);
-    updateStats();
-    renderBoard();
+    if (!res.ok) throw new Error('Failed to load');
+    rawTrades = await res.json();
+    rebuildAndRender();
     showToast('Loaded ✓');
-  } catch(err){
+  } catch(err) {
     document.getElementById('board').innerHTML =
       `<div class="empty"><h3>Could not load data</h3><p>${err.message}</p></div>`;
     showToast('Failed to load', true);
   } finally {
     btn.innerHTML = 'Refresh';
-    btn.disabled = false;
+    btn.disabled  = false;
   }
 }
 
-// ── Build variation map (Step 1–4 only, no LTF) ─
-function buildVariations(trades){
-  const map = {};
+function rebuildAndRender() {
+  allVariations = buildVariations(rawTrades);
+  updateStats();
+  renderBoard();
+}
+
+// ── Build variations ──────────────────────────────────────────────────────────
+function activeVarKeys() {
+  return [
+    ...DEFAULT_VARS.map(d => d.key),
+    ...OPTIONAL_VARS.filter(o => activeOptional.has(o.key)).map(o => o.key)
+  ];
+}
+
+function buildVariations(trades) {
+  const keys = activeVarKeys();
+  const map  = {};
+
   trades.forEach(t => {
-    const key = [
-      t.trade_type || '—',
-      t.approach   || '—',
-      t.anchor     || '—',
-      t.candle_4h  || '—',
-      t.entry_tf   || '—',
-      t.structure  || '—'
-    ].join('|');
-
-    if(!map[key]){
-      map[key] = {
-        trade_type: t.trade_type || '—',
-        approach:   t.approach   || '—',
-        anchor:     t.anchor     || '—',
-        candle_4h:  t.candle_4h  || '—',
-        entry_tf:   t.entry_tf   || '—',
-        structure:  t.structure  || '—',
-        wins: 0, losses: 0, total: 0,
-        tickers: {}
-      };
+    const key = keys.map(k => t[k] || '—').join('|');
+    if (!map[key]) {
+      const obj = { wins:0, losses:0, total:0, tickers:{} };
+      keys.forEach(k => obj[k] = t[k] || '—');
+      map[key] = obj;
     }
-
-    // Track ticker counts
-    if(t.ticker){
-      map[key].tickers[t.ticker] = (map[key].tickers[t.ticker] || 0) + 1;
-    }
-
-    const r = (t.result || '').toLowerCase();
-    if(r === 'win'){
-      map[key].wins++;
-      map[key].total++;
-    } else if(r === 'loss'){
-      map[key].losses++;
-      map[key].total++;
-    }
-    // Pending and Breakeven excluded from count
+    if (t.ticker) map[key].tickers[t.ticker] = (map[key].tickers[t.ticker]||0)+1;
+    const r = (t.result||'').toLowerCase();
+    if (r==='win')       { map[key].wins++;   map[key].total++; }
+    else if (r==='loss') { map[key].losses++; map[key].total++; }
   });
 
   return Object.values(map).map(c => {
     const closed = c.wins + c.losses;
-    c.winrate = closed > 0 ? (c.wins / closed) * 100 : null;
+    c.winrate = closed > 0 ? (c.wins/closed)*100 : null;
     return c;
-  }).filter(c => c.total > 0); // only show variations with at least 1 closed trade
+  }).filter(c => c.total > 0);
 }
 
-// ── Stats ─────────────────────────────────────
-function updateStats(){
-  const total = allVariations.reduce((s,c) => s + c.total, 0);
-  document.getElementById('stat-variations').textContent = allVariations.length;
-  document.getElementById('stat-trades').textContent = total;
+// ── Hardcoded option counts from checklist page ───────────────────────────────
+// anchor = 2 per approach context (not 4 total) — Conservative has C2->C3, C3->C4
+// and Aggressive has C2, C3. Since approach constrains anchor, only 2 are ever
+// reachable at a time, so we use 2 to avoid counting impossible combinations.
+const CHECKLIST_COUNTS = {
+  trade_type:       2,  // Reversal, Continuation
+  approach:         2,  // Conservative, Aggressive
+  anchor:           2,  // 2 / appr (approach-dependent, never 4)
+  candle_4h:        5,  // 1800, 2200, 0200, 0600, 1000
+  structure:        3,  // Retracement, Ext Manipulation, Break & Re-test
+  entry_tf:         5,  // 45m, 30m, 15m, 5m, 3m
+  ltf_level:        4,  // Swing H/L, Swing H/L (SMT), FVG, Opposing candle
+  direction:        2,  // Long, Short
+  w_open_position:  3,  // Above, Below, Within
+  d_open_position:  3,  // Above, Below, Within
+};
+
+const ANCHOR_TOOLTIP_LABEL = '2 / appr';
+
+// ── Total possible combinations (hardcoded counts, anchor = 2/appr) ───────────
+function computeTotalPossible() {
+  const keys = activeVarKeys();
+  let total = 1;
+  keys.forEach(k => {
+    const count = CHECKLIST_COUNTS[k] || 1;
+    total *= count;
+  });
+  return total;
 }
 
-// ── Rate class ────────────────────────────────
-function rateClass(wr){
-  if(wr === null) return 'none';
-  if(wr >= 60) return 'high';
-  if(wr >= 40) return 'mid';
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function computeBreakdown() {
+  const keys = activeVarKeys();
+  const allVarDefs = [...DEFAULT_VARS, ...OPTIONAL_VARS];
+  return keys.map(k => {
+    const def   = allVarDefs.find(d => d.key === k);
+    const count = CHECKLIST_COUNTS[k] || 1;
+    const displayCount = k === 'anchor' ? ANCHOR_TOOLTIP_LABEL : count;
+    return { label: def ? def.label : k, count: displayCount, raw: count };
+  });
+}
+
+function updateStats() {
+  const possible    = computeTotalPossible();
+  const totalTrades = allVariations.reduce((s,c) => s+c.total, 0);
+  const breakdown   = computeBreakdown();
+
+  // Build tooltip rows
+  const rows = breakdown.map(b =>
+    `<div class="denom-tip-row"><span class="dk">${b.label}</span><span class="dv">${b.count}</span></div>`
+  ).join('');
+
+  const formula = breakdown.map(b => b.raw).join(' × ');
+  const tipHTML = `
+    <div class="denom-tip">
+      <div class="denom-tip-title">BREAKDOWN</div>
+      ${rows}
+      <div class="denom-tip-sep"></div>
+      <div class="denom-tip-row" style="font-size:9px;opacity:0.5;margin-bottom:4px;"><span class="dk">${formula}</span></div>
+      <div class="denom-tip-total"><span class="dk">Total possible</span><span class="dv">${possible}</span></div>
+    </div>`;
+
+  document.getElementById('stat-variations').innerHTML =
+    `<span style="color:var(--accent)">${allVariations.length}</span>` +
+    `<span style="color:var(--text-muted)"> / </span>` +
+    `<span class="denom-wrap"><span class="denom">${possible}</span>${tipHTML}</span>`;
+
+  document.getElementById('stat-trades').textContent = totalTrades;
+}
+
+function rateClass(wr) {
+  if (wr===null) return 'none';
+  if (wr>=60)    return 'high';
+  if (wr>=40)    return 'mid';
   return 'low';
 }
 
-// ── Type filter ───────────────────────────────
-function setTypeFilter(type, btn){
+function setTypeFilter(type, btn) {
   currentTypeFilter = type;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderBoard();
 }
 
-// ── Render board ──────────────────────────────
-function renderBoard(){
+// ── Tag CSS class per field ───────────────────────────────────────────────────
+function tagCls(key, val) {
+  if (key==='trade_type') return `type-${val}`;
+  const map = {
+    approach:         't-approach',
+    anchor:           't-anchor',
+    candle_4h:        't-candle',
+    structure:        't-structure',
+    entry_tf:         't-entry',
+    ltf_level:        't-ltf',
+    direction:        't-direction',
+    w_open_position:  't-wopen',
+    d_open_position:  't-dopen',
+  };
+  return map[key] || '';
+}
+
+// ── Render board ──────────────────────────────────────────────────────────────
+function renderBoard() {
   const board    = document.getElementById('board');
   const minCount = parseInt(document.getElementById('min-trades').value) || 1;
   const sortBy   = document.getElementById('sort-by').value;
 
-  let variations = allVariations.filter(c => {
-    const matchMin  = c.total >= minCount;
-    const matchType = currentTypeFilter === 'All' || c.trade_type === currentTypeFilter;
-    return matchMin && matchType;
-  });
+  const allVarDefs = [
+    ...DEFAULT_VARS,
+    ...OPTIONAL_VARS.filter(o => activeOptional.has(o.key))
+  ];
 
-  variations.sort((a, b) => {
-    if(sortBy === 'winrate'){
-      if(a.winrate === null && b.winrate === null) return 0;
-      if(a.winrate === null) return 1;
-      if(b.winrate === null) return -1;
+  let variations = allVariations.filter(c =>
+    c.total >= minCount &&
+    (currentTypeFilter==='All' || c.trade_type===currentTypeFilter)
+  );
+
+  variations.sort((a,b) => {
+    if (sortBy==='winrate') {
+      if (a.winrate===null && b.winrate===null) return 0;
+      if (a.winrate===null) return 1;
+      if (b.winrate===null) return -1;
       return b.winrate - a.winrate;
     }
-    if(sortBy === 'trades') return b.total - a.total;
-    if(sortBy === 'wins')   return b.wins  - a.wins;
+    if (sortBy==='trades') return b.total - a.total;
+    if (sortBy==='wins')   return b.wins  - a.wins;
     return 0;
   });
 
-  if(!variations.length){
+  if (!variations.length) {
     board.innerHTML = `<div class="empty"><h3>No variations found</h3><p>Try lowering the minimum trades filter.</p></div>`;
     return;
   }
 
-  board.innerHTML = variations.map((c, i) => {
-    const rank    = i + 1;
-    const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+  board.innerHTML = variations.map((c,i) => {
+    const rank    = i+1;
+    const rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     const rc      = rateClass(c.winrate);
-    const wr     = c.winrate !== null ? c.winrate.toFixed(1) + '%' : '—';
-    const code   = buildCode(c);
+    const wr      = c.winrate!==null ? c.winrate.toFixed(1)+'%' : '—';
+    const code    = buildCode(c);
+
+    const tags = allVarDefs.map(def => {
+      const val = c[def.key] || '—';
+      // W/O and D/O share the same values so use abbr to distinguish; all others show raw value
+      const useAbbr = def.key === 'w_open_position' || def.key === 'd_open_position';
+      const display = useAbbr ? abbrFor(def.key, val) : val;
+      return `<span class="tag ${tagCls(def.key, val)}">${display}</span>`;
+    }).join('');
 
     const tickerChips = Object.entries(c.tickers)
-      .sort((a,b) => b[1]-a[1])
-      .map(([t,n]) => `<span class="ticker-chip">${t} (${n})</span>`)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([t,n])=>`<span class="ticker-chip">${t} (${n})</span>`)
       .join('');
-    const tickerCount = Object.keys(c.tickers).length;
 
     return `
     <div class="combo-card">
@@ -362,16 +610,9 @@ function renderBoard(){
         <div class="combo-code">${code}</div>
         <div class="combo-winrate ${rc}">${wr}</div>
       </div>
-      <div class="combo-tags">
-        <span class="tag type-${c.trade_type}">${c.trade_type}</span>
-        <span class="tag t-approach">${c.approach}</span>
-        <span class="tag t-anchor">${c.anchor}</span>
-        <span class="tag t-candle">${c.candle_4h}</span>
-        <span class="tag t-entry">${c.entry_tf}</span>
-        <span class="tag t-structure">${c.structure}</span>
-      </div>
+      <div class="combo-tags">${tags}</div>
       <div class="combo-bottom">
-        ${tickerCount > 0 ? `<div class="ticker-row">${tickerChips}</div>` : '<div></div>'}
+        ${tickerChips ? `<div class="ticker-row">${tickerChips}</div>` : '<div></div>'}
         <div class="combo-stats">
           <span class="w">${c.wins}W</span> · <span class="l">${c.losses}L</span> · ${c.total} trades
         </div>
@@ -380,13 +621,163 @@ function renderBoard(){
   }).join('');
 }
 
-function showToast(msg, isError){
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openModal() {
+  renderModal();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function handleOverlayClick(e) {
+  if (e.target===document.getElementById('modal-overlay')) closeModal();
+}
+
+function renderModal() {
+  document.getElementById('modal-body').innerHTML = OPTIONAL_VARS.map(v => {
+    const on = activeOptional.has(v.key);
+    return `
+    <div class="var-row ${on?'is-active':''}" id="row-${v.key}">
+      <div class="var-row-name">${v.label}</div>
+      <button class="var-toggle" onclick="toggleOptional('${v.key}')" title="${on?'Remove variable':'Add variable'}">
+        ${on ? '✓' : '+'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function toggleOptional(key) {
+  activeOptional.has(key) ? activeOptional.delete(key) : activeOptional.add(key);
+  renderModal();
+  renderActivePills();
+  if (refOpen) renderRef();
+  rebuildAndRender();
+}
+
+function renderActivePills() {
+  /* pills removed — modal checkmarks are sufficient */
+  const badge   = document.getElementById('var-count-badge');
+  const clearBtn = document.getElementById('btn-clear-vars');
+  if (activeOptional.size > 0) {
+    if (badge)    { badge.textContent = '+' + activeOptional.size; badge.style.display = 'inline'; }
+    if (clearBtn) clearBtn.style.display = 'inline-flex';
+  } else {
+    if (badge)    badge.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+
+function clearAllVars() {
+  activeOptional.clear();
+  renderModal();
+  renderActivePills();
+  if (refOpen) renderRef();
+  rebuildAndRender();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, isError) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = isError ? 'error' : '';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(()=>t.classList.remove('show'), 2500);
 }
+
+// ── Reference card ───────────────────────────────────────────────────────────
+const REF_DATA = [
+  { key:'trade_type', label:'Type', optional:false, values:[
+    ['Reversal','REV'],['Continuation','CON']
+  ]},
+  { key:'approach', label:'Approach', optional:false, values:[
+    ['Conservative','CONS'],['Aggressive','AGG']
+  ]},
+  { key:'anchor', label:'Anchor', optional:false, values:[
+    ['C2 → C3 (Cons)','C2→C3'],['C3 → C4 (Cons)','C3→C4'],
+    ['C2 (Agg)','C2'],['C3 (Agg)','C3']
+  ]},
+  { key:'candle_4h', label:'Candle 4H', optional:false, values:[
+    ['1800','1800'],['2200','2200'],['0200','0200'],['0600','0600'],['1000','1000']
+  ]},
+  { key:'structure', label:'Structure', optional:false, values:[
+    ['Retracement','RET'],
+    ['Consolidation: Ext. Manipulation','EXT'],
+    ['Consolidation: Break & Re-test','BNR']
+  ]},
+  { key:'entry_tf', label:'Entry TF', optional:true, values:[
+    ['45m','45m'],['30m','30m'],['15m','15m'],['5m','5m'],['3m','3m']
+  ]},
+  { key:'ltf_level', label:'LTF Level', optional:true, values:[
+    ['Swing High/Low','SHL'],['Swing High/Low (SMT)','SHLSMT'],
+    ['FVG','FVG'],['Opposing candle','OPC']
+  ]},
+  { key:'direction', label:'Direction', optional:true, values:[
+    ['Long','LONG'],['Short','SHORT']
+  ]},
+  { key:'w_open_position', label:'W/O Position', optional:true, values:[
+    ['Above','W-ABV'],['Below','W-BLW'],['Within','W-WTH']
+  ]},
+  { key:'d_open_position', label:'D/O Position', optional:true, values:[
+    ['Above','D-ABV'],['Below','D-BLW'],['Within','D-WTH']
+  ]},
+];
+
+let refOpen = false;
+
+function toggleRef() {
+  refOpen = !refOpen;
+  document.getElementById('ref-body').style.display = refOpen ? 'block' : 'none';
+  document.getElementById('ref-icon').textContent   = refOpen ? '▾' : '▸';
+  if (refOpen) renderRef();
+}
+
+function renderRef() {
+  document.getElementById('ref-grid').innerHTML = REF_DATA.map(g => {
+    const isOpt    = g.optional;
+    const isActive = isOpt && activeOptional.has(g.key);
+    const badge    = isOpt
+      ? (isActive
+          ? `<span class="active-badge">active</span>`
+          : `<span class="opt-badge">optional</span>`)
+      : '';
+    const items = g.values.map(([full, abbr]) =>
+      `<div class="ref-item">
+        <span class="ref-item-full">${full}</span>
+        <span class="ref-item-abbr">${abbr}</span>
+      </div>`
+    ).join('');
+    return `
+    <div class="ref-group ${isOpt?'is-optional':''}${isActive?' is-active':''}">
+      <div class="ref-group-label">${g.label} ${badge}</div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+// ── Tooltip position — fixed to cursor/element, viewport-aware ───────────────
+document.addEventListener('mouseover', e => {
+  const wrap = e.target.closest('.denom-wrap');
+  if (!wrap) return;
+  const tip = wrap.querySelector('.denom-tip');
+  if (!tip) return;
+  const denom = wrap.querySelector('.denom');
+  const rect  = denom.getBoundingClientRect();
+  const tH    = tip.offsetHeight || 260;
+  const spaceAbove = rect.top;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const useAbove   = spaceAbove > tH + 12 || spaceAbove > spaceBelow;
+  if (useAbove) {
+    tip.style.top    = '';
+    tip.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+  } else {
+    tip.style.bottom = '';
+    tip.style.top    = (rect.bottom + 8) + 'px';
+  }
+  const left = rect.left + rect.width / 2;
+  const tipW = 200;
+  const clampedLeft = Math.max(12, Math.min(left - tipW/2, window.innerWidth - tipW - 12));
+  tip.style.left = clampedLeft + 'px';
+});
 
 loadData();
 </script>
