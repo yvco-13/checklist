@@ -426,7 +426,6 @@
           <th class="sortable sorted-desc" id="sort-date" onclick="toggleSort()">Date <span class="sort-arrow"></span></th>
           <th>Ticker</th>
           <!-- Scrollable cols -->
-          <th>Direction</th>
           <th>Type</th>
           <th>Approach</th>
           <th>Anchor</th>
@@ -437,7 +436,8 @@
           <th>Ratio</th>
           <th>Projected Target</th>
           <!-- Open position cols (before entry) -->
-          <th class="exec-sep exec-col" style="white-space:nowrap;">W/O pos.</th>
+          <th class="exec-sep exec-col" style="white-space:nowrap;">Direction</th>
+          <th class="exec-col" style="white-space:nowrap;">W/O pos.</th>
           <th class="exec-col" style="white-space:nowrap;">D/O pos.</th>
           <!-- Execution cols -->
           <th class="exec-col" style="border-left:1px solid rgba(79,158,255,0.15)!important;">Entry</th>
@@ -708,7 +708,6 @@ function renderTable(){
       <td class="mono" style="color:var(--text-muted);">${i+1}</td>
       <td class="mono" style="font-size:11px;">${date}</td>
       <td style="color:var(--accent);">${e(t.ticker)}</td>
-      <td>${directionHTML(t.direction)}</td>
       <td>${t.trade_type ? `<span style="font-size:11px;font-family:'Space Mono',monospace;font-weight:400;color:${t.trade_type==='Reversal'?'var(--purple)':'var(--teal)'};">${t.trade_type}</span>` : `<span class="empty-val">—</span>`}</td>
       <td class="mono" style="font-size:11px;">${e(t.approach)}</td>
       <td class="mono" style="font-size:11px;white-space:nowrap;">${e(t.anchor)}</td>
@@ -719,8 +718,13 @@ function renderTable(){
       <td class="mono">${e(t.ratio)}</td>
       <td class="mono">${e(t.projected_target)}</td>
 
-      <!-- W/O Position -->
+      <!-- Direction + W/O Position + D/O Position -->
       <td class="exec-sep exec-col">
+        ${directionHTML(t.direction)}
+      </td>
+
+      <!-- W/O Position -->
+      <td class="exec-col">
         ${posTextHTML(t.w_open_position)}
       </td>
 
